@@ -1,6 +1,7 @@
 all:
 	rm -f *.pyc
-	./work.py
+	./experiment_1.py
+#	./work.py
 	
 generator_1:
 	rm -f *.png

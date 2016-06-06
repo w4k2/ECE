@@ -16,7 +16,6 @@ class Exponer(object):
 
 		self.matrix = [0] * (grain * grain * self.classes)
 		radius_m = int(radius * grain)
-		print len(self.matrix)
 
 		# Iterujemy probki
 		for sample in dataset.samples:
@@ -47,8 +46,9 @@ class Exponer(object):
 				location[1] = self.grain - 1
 			pos = (location[1] + location[0] * self.grain)
 			support = self.matrix[pos]
-			sample.prediction = np.argmax(support)
-			sample.support = support
+			#sample.prediction = np.argmax(support)
+			sample.support += support
+			sample.decidePrediction()
 		
 		return 0
 

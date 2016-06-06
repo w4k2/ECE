@@ -30,6 +30,9 @@ class Dataset:
 		self.classes += 1
 	  	self.features = len(self.source_samples[0].features)
 
+	  	# Initialize supports
+	  	self.clearSupports()
+
 	  	# Set base sample set
 	  	self.samples = self.source_samples
 
@@ -41,6 +44,13 @@ class Dataset:
 		for index, value in enumerate(indexes):
 			self.cv.append((value, index % FOLDS))
 
+	def clearSupports(self):
+		for sample in self.source_samples:
+			sample.support = np.zeros(self.classes)
+
+	def __str__(self):
+		return "%s dataset" % (self.dbname)
+
 	def setCV(self,fold):
 		self.samples = []
 		self.test = []
@@ -51,14 +61,57 @@ class Dataset:
 				self.test.append(self.source_samples[pair[0]]);
 
 	def score(self):
-		hit = 0
+		# https://en.wikipedia.org/wiki/Confusion_matrix
+		confusion_matrix = np.zeros((self.classes,self.classes)).astype(int)
+
 		for sample in self.test:
-			if sample.prediction == sample.label:
-				hit += 1
+			confusion_matrix[sample.label,sample.prediction] += 1
 
-		accuracy = float(hit) / float(len(self.test))
+		true_positives = np.zeros(self.classes).astype(float)
+		false_negatives = np.zeros(self.classes).astype(float)
+		false_positives = np.zeros(self.classes).astype(float)
+		true_negatives = np.zeros(self.classes).astype(float)
+		
+		for pro in xrange(0,self.classes):
+			true_positives[pro] += confusion_matrix[pro,pro]
+			for contra in xrange(0,self.classes):
+				if pro == contra: continue
+				false_negatives[pro] += confusion_matrix[pro,contra]
+				false_positives[pro] += confusion_matrix[contra,pro]
+			true_negatives[pro] = sum(sum(confusion_matrix)) - true_positives[pro] - false_negatives[pro] - false_positives[pro]
 
-		print "Accuracy = %.3f" % accuracy
+		sensitivity = true_positives / (true_positives + false_negatives)
+		specificity = true_negatives / (false_positives + true_negatives)
+		ppv = true_positives / (true_positives + false_positives)
+		npv = true_negatives / (true_negatives + false_negatives)
+		bac = (sensitivity + specificity) / 2 
+
+		acc = sum(true_positives + true_negatives) / sum(true_positives + true_negatives + false_positives + false_negatives)
+
+#		print confusion_matrix
+#		print "TP: %s" % str(true_positives)
+#		print "FN: %s" % str(false_negatives)
+#		print "FP: %s" % str(false_positives)
+#		print "TN: %s" % str(true_negatives)
+
+#		print "\nSen: %.2f" % sensitivity.mean()
+#		print "Spc: %.2f" % specificity.mean()
+#		print "PPV: %.2f" % ppv.mean()
+#		print "NPV: %.2f" % npv.mean()
+#		print "ACC: %.2f" % acc
+#		print "BAC: %.2f" % bac.mean()
+
+		scores = \
+		{
+			'sensitivity': sensitivity.mean(),
+			'specificity': specificity.mean(),
+			'ppv': ppv.mean(),
+			'npv': npv.mean(),
+			'accuracy': acc,
+			'bac': bac.mean()
+		}
+
+		return scores
 
 	def normalize(self):
 		minimum = np.array(self.source_samples[0].features)
