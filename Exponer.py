@@ -1,13 +1,20 @@
 from Dataset import *
 
+from enum import Enum
 import numpy as np
 import math
 import operator
 import png
 import functools
 
+class ExponerParticipation(Enum):
+	lone = 1
+	theta1 = 2
+	theta2 = 3
+
 class Exponer(object):
-	def __init__(self, dataset, chosen_lambda, grain, radius):
+	def __init__(self, dataset, chosen_lambda, grain, radius, exponerParticipation = ExponerParticipation.lone):
+		self.exponerParticipation = exponerParticipation
 		self.grain = grain
 		self.radius = radius
 		self.chosen_lambda = chosen_lambda
@@ -46,8 +53,10 @@ class Exponer(object):
 				location[1] = self.grain - 1
 			pos = (location[1] + location[0] * self.grain)
 			support = self.matrix[pos]
-			#sample.prediction = np.argmax(support)
-			sample.support += support
+
+			if self.exponerParticipation == ExponerParticipation.lone:
+				sample.support += support
+
 			sample.decidePrediction()
 		
 		return 0
