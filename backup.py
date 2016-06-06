@@ -25,3 +25,19 @@
 		maxi = np.amax(self.matrix, axis=0)
 		self.matrix /= maxi
 """
+
+
+"""
+with open('datasets.csv', 'rb') as file:
+	csvDataset = csv.reader(file, delimiter=',', quotechar='\'')
+	for row in csvDataset:
+		filename = row[0]
+		dbname = row[1]
+		dataset = Dataset('data/' + filename, dbname)
+		print dataset
+		chosen_lambda = [0,1]
+		for x in xrange(0,15):
+			exponer = Exponer(dataset, chosen_lambda, 30, 0.1)
+
+
+"""
