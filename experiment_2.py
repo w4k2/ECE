@@ -54,7 +54,7 @@ end = time.time()
 print "\n# GENERATING SUMMARY"
 filename = "results/experiment_2.csv"
 textFile = open(filename, "w")
-for index, radius in enumerate(radiuses):
+for index, grain in enumerate(grains):
 	accumulator = []
 	for fold in folds:
 		accumulator.append(summary[fold][index])
@@ -64,7 +64,7 @@ for index, radius in enumerate(radiuses):
 	specificity = sum(e['specificity'] for e in accumulator) / len(accumulator)
 	bac = sum(e['bac'] for e in accumulator) / len(accumulator)
 	
-	row = "% 3i, %.3f, %.3f, %.3f, %.3f\n" % (radius, accuracy, sensitivity, specificity, bac)
+	row = "% 3i, %.3f, %.3f, %.3f, %.3f\n" % (grain, accuracy, sensitivity, specificity, bac)
 	textFile.write(row)
 
 textFile.close()
