@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 """
-Experiment 1
+Experiment 2
 
 dataset: iris
-grain: 50
+radius: 30
 one exponer ([2,3])
 
-testing radiuses in 1:99
+testing grains in 1:50
 """
 
 import csv
@@ -21,8 +21,8 @@ start = time.time()
 dataset = Dataset('data/iris.csv','iris')
 
 chosen_lambda = [2,3]
-grain = 50
-radiuses = xrange(1,100,1)
+grains = xrange(1,51)
+radius = 30
 folds = xrange(0,5)
 
 summary = []
@@ -31,17 +31,16 @@ for fold in folds:
 	dataset.setCV(fold)
 	summary.append([])
 	print "\n| %s, fold %i" % (dataset, fold)
-	print "RAD\tACC\tSEN\tSPC\tBAC\n---\t---\t---\t---\t---"
+	print "GRA\tACC\tSEN\tSPC\tBAC\n---\t---\t---\t---\t---"
 		
-	for radius_i in radiuses:
-		radius = radius_i / 100.
+	for grain in grains:
 		exponer = Exponer(dataset, chosen_lambda, grain, radius)
 
 		dataset.clearSupports()
 		predictions = exponer.predict(dataset)
 		scores = dataset.score()
 		print "%03i\t%02.0f%%\t%02.0f%%\t%02.0f%%\t%02.0f%%" % \
-			(radius_i, \
+			(grain, \
 			scores['accuracy']*100, \
 			scores['sensitivity']*100, \
 			scores['specificity']*100, \
@@ -53,7 +52,7 @@ for fold in folds:
 end = time.time()
 
 print "\n# GENERATING SUMMARY"
-filename = "results/experiment_1.csv"
+filename = "results/experiment_2.csv"
 textFile = open(filename, "w")
 for index, radius in enumerate(radiuses):
 	accumulator = []
