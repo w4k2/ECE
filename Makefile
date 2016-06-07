@@ -11,6 +11,11 @@ experiment_1:
 
 experiment_2:
 	./experiment_2.py
+	./experiment_2.gnu
+
+experiment_3:
+	./experiment_3.py
+	./experiment_3.gnu
 
 generator_1:
 	./generator_1.py
