@@ -13,16 +13,18 @@ class ExponerParticipation(Enum):
 	theta2 = 3
 
 class Exponer(object):
-	def __init__(self, dataset, chosen_lambda, grain, radius, exponerParticipation = ExponerParticipation.lone):
+	def __init__(self, dataset, chosen_lambda, configuration, exponerParticipation = ExponerParticipation.lone):
+		self.dataset = dataset
 		self.exponerParticipation = exponerParticipation
-		self.grain = grain
-		self.radius = radius
+		self.configuration = configuration
+		self.grain = configuration['grain']
+		self.radius = configuration['radius']
 		self.chosen_lambda = chosen_lambda
 		self.dbname = dataset.dbname
 		self.classes = dataset.classes
 
-		self.matrix = [0] * (grain * grain * self.classes)
-		radius_m = int(radius * grain)
+		self.matrix = [0] * (self.grain * self.grain * self.classes)
+		radius_m = int(self.radius * self.grain)
 
 		# Iterujemy probki
 		for sample in dataset.samples:
@@ -31,20 +33,20 @@ class Exponer(object):
 			location = np.multiply(features, self.grain).astype(int)
 			for x in xrange(location[0]-radius_m,location[0]+radius_m):
 				for y in xrange(location[1]-radius_m,location[1]+radius_m):
-					if x < 0 or x >= grain or y < 0 or y >= grain:
+					if x < 0 or x >= self.grain or y < 0 or y >= self.grain:
 						continue
-					point = [float(x) / grain, float(y) / grain]
+					point = [float(x) / self.grain, float(y) / self.grain]
 					distance = math.sqrt(sum([n**2 for n in map(operator.sub,point,features)]))
-					if distance < radius:
-						influence = radius - distance
+					if distance < self.radius:
+						influence = self.radius - distance
 						pos = (y + x * self.grain) * self.classes + label
 						self.matrix[pos] += influence
 
-		self.matrix = np.array(self.matrix).reshape(grain**2,-1)
+		self.matrix = np.array(self.matrix).reshape(self.grain**2,-1)
 		self.matrix /= np.amax(self.matrix, axis=0)
 
-	def predict(self,dataset):
-		for sample in dataset.test:
+	def predict(self):
+		for sample in self.dataset.test:
 			features = [sample.features[index] for index in self.chosen_lambda]
 			location = np.multiply(features, self.grain).astype(int)
 			if location[0] == self.grain:

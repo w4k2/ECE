@@ -34,10 +34,11 @@ for fold in folds:
 	print "GRA\tACC\tSEN\tSPC\tBAC\n---\t---\t---\t---\t---"
 		
 	for grain in grains:
-		exponer = Exponer(dataset, chosen_lambda, grain, radius)
+		configuration = {'grain': grain, 'radius': radius}
+		exponer = Exponer(dataset, chosen_lambda, configuration)
 
 		dataset.clearSupports()
-		predictions = exponer.predict(dataset)
+		exponer.predict()
 		scores = dataset.score()
 		print "%03i\t%02.0f%%\t%02.0f%%\t%02.0f%%\t%02.0f%%" % \
 			(grain, \

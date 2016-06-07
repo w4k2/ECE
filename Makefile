@@ -1,6 +1,7 @@
 all:
 	rm -f *.pyc
-	./experiment_3.py
+#	./experiment_3.py
+	./experiment_3.gnu
 #	./experiment_1.gnu
 #	./work.py
 	

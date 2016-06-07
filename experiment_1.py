@@ -35,10 +35,11 @@ for fold in folds:
 		
 	for radius_i in radiuses:
 		radius = radius_i / 100.
-		exponer = Exponer(dataset, chosen_lambda, grain, radius)
+		configuration = {'radius': radius, 'grain': grain}
+		exponer = Exponer(dataset, chosen_lambda,configuration)
 
 		dataset.clearSupports()
-		predictions = exponer.predict(dataset)
+		exponer.predict()
 		scores = dataset.score()
 		print "%03i\t%02.0f%%\t%02.0f%%\t%02.0f%%\t%02.0f%%" % \
 			(radius_i, \

@@ -4,7 +4,7 @@ Experiment 3
 
 dataset: iris
 grain: 20
-exponers: all possible combinations
+exponers: all possible combinations vs one exponer ([2,3])
 
 testing radiuses in 1:30
 """
@@ -16,43 +16,70 @@ import itertools
 
 import Dataset
 from Exponer import *
+from EEC import *
 
 start = time.time()
 
+# Load dataset
 dataset = Dataset('data/iris.csv','iris')
 
 grain = 20
-radiuses = xrange(1,41,1)
+radiuses = xrange(1,31,1)
 folds = xrange(0,5)
 
 summary = []
+
+"""
+dataset.setCV(0)
+eec.predict()
+scores = dataset.score()
+print "%02.0f%%\t%02.0f%%\t%02.0f%%\t%02.0f%%" % \
+	(\
+	scores['accuracy']*100, \
+	scores['sensitivity']*100, \
+	scores['specificity']*100, \
+	scores['bac']*100)
+"""
+
+
+
 
 for fold in folds:
 	dataset.setCV(fold)
 	summary.append([])
 	print "\n| %s, fold %i" % (dataset, fold)
-	print "RAD\tACC\tSEN\tSPC\tBAC\n---\t---\t---\t---\t---"
+	print "RAD\tACC\tBAC\tACC\tBAC\n---\t---\t---\t---\t---"
 	
 	for radius_i in radiuses:
 		radius = radius_i / 100.
-		dataset.clearSupports()
 
-		combinations = itertools.combinations(range(0, dataset.features), 2)
-		for combination in combinations:
-			chosen_lambda = [combination[0], combination[1]]
-#			print chosen_lambda
-			exponer = Exponer(dataset, chosen_lambda, grain, radius)
-			predictions = exponer.predict(dataset)
+		configuration = {'radius': radius, 'grain': grain}
+		eec = EEC(dataset,configuration)
+		eec.predict()
 
 		scores = dataset.score()
+
+		chosen_lambda = [2,3]
+		exponer = Exponer(dataset,chosen_lambda,configuration)
+		dataset.clearSupports()
+		exponer.predict()
+		scores2 = dataset.score()
+
 		print "%03i\t%02.0f%%\t%02.0f%%\t%02.0f%%\t%02.0f%%" % \
 			(radius_i, \
 			scores['accuracy']*100, \
-			scores['sensitivity']*100, \
-			scores['specificity']*100, \
-			scores['bac']*100)
+			scores['bac']*100,\
+			scores2['accuracy']*100, \
+			scores2['bac']*100)
 
-		summary[fold].append(scores)
+		result = {
+			'accuracy1': scores['accuracy'],
+			'accuracy2': scores2['accuracy'],
+			'bac1': scores['bac'],
+			'bac2': scores2['bac']
+		}
+
+		summary[fold].append(result)
 
 end = time.time()
 
@@ -64,12 +91,12 @@ for index, radius in enumerate(radiuses):
 	for fold in folds:
 		accumulator.append(summary[fold][index])
 	
-	accuracy = sum(e['accuracy'] for e in accumulator) / len(accumulator)
-	sensitivity = sum(e['sensitivity'] for e in accumulator) / len(accumulator)
-	specificity = sum(e['specificity'] for e in accumulator) / len(accumulator)
-	bac = sum(e['bac'] for e in accumulator) / len(accumulator)
+	accuracy1 = sum(e['accuracy1'] for e in accumulator) / len(accumulator)
+	accuracy2 = sum(e['accuracy2'] for e in accumulator) / len(accumulator)
+	bac1 = sum(e['bac1'] for e in accumulator) / len(accumulator)
+	bac2 = sum(e['bac2'] for e in accumulator) / len(accumulator)
 	
-	row = "% 3i, %.3f, %.3f, %.3f, %.3f\n" % (radius, accuracy, sensitivity, specificity, bac)
+	row = "% 3i, %.3f, %.3f, %.3f, %.3f\n" % (radius, accuracy1, bac1, accuracy2, bac2)
 	textFile.write(row)
 
 textFile.close()

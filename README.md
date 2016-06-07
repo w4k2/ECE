@@ -18,7 +18,7 @@ Na oko klasy najmniej mieszaja sie w parze 3:4. Wiec sprobujmy uzyc tego cudu do
 
 Najpierw zbadajmy radius.
 
-### Experiment 1
+#### Experiment 1
 
 	dataset: iris
 	grain: 50
@@ -27,3 +27,44 @@ Najpierw zbadajmy radius.
 	testing radiuses in 1:99
 	
 ![image](plots/experiment_1.png)
+
+#### Experiment 2
+
+	dataset: iris
+	radius: 30
+	one exponer ([2,3])
+	
+	testing grains in 1:50
+
+![image](plots/experiment_2.png)
+
+
+## Ensemble of _exponers_
+
+Zwyczajna akumulacja wsparć z wielu eksponerów.
+
+#### Experyment 3
+	
+	dataset: iris
+	grain: 20
+	exponers: all possible combinations vs one exponer ([2,3])
+	
+	testing radiuses in 1:30
+
+![image](plots/experiment_3.png)
+
+## Naive approach to deal with the curse of dimensionality
+
+## Self-confidence measure
+
+### One per exponer
+
+### One per class in exponer
+
+## Threedimensional _exponers_
+
+## Joint model
+
+Akumulujmy eksponery 2D i 3D.
+
+## Heuristic approach to deal with the curse of dimensionality
