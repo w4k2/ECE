@@ -43,7 +43,7 @@ Najpierw zbadajmy radius.
 
 Zwyczajna akumulacja wsparć z wielu eksponerów.
 
-#### Experyment 3
+#### Experiment 3
 	
 	dataset: iris
 	grain: 20
@@ -54,6 +54,16 @@ Zwyczajna akumulacja wsparć z wielu eksponerów.
 ![image](plots/experiment_3.png)
 
 ## Naive approach to deal with the curse of dimensionality
+
+#### Experiment 4
+
+	dataset: heart
+	grain: 10
+	radius: 100
+	
+	testing brutal exponers limits from 1:30
+	
+![image](plots/experiment_4.png)
 
 ## Self-confidence measure
 

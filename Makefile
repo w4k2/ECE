@@ -1,10 +1,7 @@
 all:
 	rm -f *.pyc
-#	./experiment_3.py
-	./experiment_3.gnu
-#	./experiment_1.gnu
-#	./work.py
-	
+	./work.py
+
 experiment_1:
 	./experiment_1.py
 	./experiment_1.gnu
@@ -16,6 +13,10 @@ experiment_2:
 experiment_3:
 	./experiment_3.py
 	./experiment_3.gnu
+
+experiment_4:
+	./experiment_4.py
+	./experiment_4.gnu
 
 generator_1:
 	./generator_1.py

@@ -29,21 +29,6 @@ folds = xrange(0,5)
 
 summary = []
 
-"""
-dataset.setCV(0)
-eec.predict()
-scores = dataset.score()
-print "%02.0f%%\t%02.0f%%\t%02.0f%%\t%02.0f%%" % \
-	(\
-	scores['accuracy']*100, \
-	scores['sensitivity']*100, \
-	scores['specificity']*100, \
-	scores['bac']*100)
-"""
-
-
-
-
 for fold in folds:
 	dataset.setCV(fold)
 	summary.append([])

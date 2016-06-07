@@ -3,6 +3,10 @@ from Dataset import *
 from Exponer import *
 
 import itertools
+import random
+
+SEED = 123
+random.seed(SEED)
 
 class EECApproach(Enum):
 	brutal = 1
@@ -16,6 +20,11 @@ class EEC:
 		self.configuration = configuration
 		self.combinations = list(itertools.combinations(range(0, dataset.features), 2))
 		
+		if approach == EECApproach.random:
+			limit = self.configuration['limit']
+			random.shuffle(self.combinations)
+			self.combinations = self.combinations[0:limit]
+
 	def __str__(self):
 		return "Ensemble on %s, with %s approach on %i lambdas\nConfigured with: %s" % (self.dataset, self.approach, len(self.combinations), self.configuration)
 
