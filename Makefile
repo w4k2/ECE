@@ -1,6 +1,6 @@
 all:
 	rm -f *.pyc
-	./experiment_2.py
+	./experiment_3.py
 #	./experiment_1.gnu
 #	./work.py
 	
@@ -8,8 +8,10 @@ experiment_1:
 	./experiment_1.py
 	./experiment_1.gnu
 
+experiment_2:
+	./experiment_2.py
+
 generator_1:
-	rm -f *.png
 	./generator_1.py
 	convert 	\( exponer_iris_1_1_g_350_r_100.png exponer_iris_1_2_g_350_r_100.png exponer_iris_1_3_g_350_r_100.png exponer_iris_1_4_g_350_r_100.png  +append \) \
 				\( exponer_iris_2_1_g_350_r_100.png exponer_iris_2_2_g_350_r_100.png exponer_iris_2_3_g_350_r_100.png exponer_iris_2_4_g_350_r_100.png  +append \) \
