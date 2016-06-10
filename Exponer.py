@@ -22,8 +22,9 @@ class Exponer(object):
 		self.chosen_lambda = chosen_lambda
 		self.dbname = dataset.dbname
 		self.classes = dataset.classes
+		self.dimensions = 2
 
-		self.matrix = [0] * (self.grain * self.grain * self.classes)
+		self.matrix = [0] * (int) (math.pow(self.grain,2) * self.classes)
 		radius_m = int(self.radius * self.grain)
 
 		# Iterujemy probki
@@ -35,15 +36,26 @@ class Exponer(object):
 				for y in xrange(location[1]-radius_m,location[1]+radius_m):
 					if x < 0 or x >= self.grain or y < 0 or y >= self.grain:
 						continue
+					vector = [x, y]
 					point = [float(x) / self.grain, float(y) / self.grain]
 					distance = math.sqrt(sum([n**2 for n in map(operator.sub,point,features)]))
 					if distance < self.radius:
 						influence = self.radius - distance
-						pos = (y + x * self.grain) * self.classes + label
+						pos = self.position(vector,label)
 						self.matrix[pos] += influence
 
 		self.matrix = np.array(self.matrix).reshape(self.grain**2,-1)
 		self.matrix /= np.amax(self.matrix, axis=0)
+
+	def position(self,p,label=0):
+		acc = 0
+		g = 1
+		for i in xrange(1,self.dimensions+1):
+			acc += p[i-1] * g
+		#	print "Step %i: p%i = %i, g%i = %i, acc = %i" % (i, i-1, p[i-1], i-1, g, acc)
+			g *= self.grain
+		#print "Result %i" % (label + self.classes * acc)
+		return label + self.classes * acc
 
 	def predict(self):
 		for sample in self.dataset.test:
@@ -53,7 +65,7 @@ class Exponer(object):
 				location[0] = self.grain - 1
 			if location[1] == self.grain:
 				location[1] = self.grain - 1
-			pos = (location[1] + location[0] * self.grain)
+			pos = self.position(location) / self.classes
 			support = self.matrix[pos]
 
 			if self.exponerParticipation == ExponerParticipation.lone:
@@ -69,6 +81,7 @@ class Exponer(object):
 			row = ()
 			for x in xrange(0,self.grain):
 				pos = x + y * self.grain
+				pos = self,position([x, y])
 				pix = np.array(self.matrix[pos] * 255).astype(int)
 				tup = tuple(pix)
 				row += tup
