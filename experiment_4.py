@@ -15,7 +15,7 @@ import numpy as np
 import itertools
 
 import Dataset
-from Exponer import *
+from Exposer import *
 from EEC import *
 
 start = time.time()
@@ -27,6 +27,7 @@ grain = 10
 radius = 1
 limits = xrange(1,31)
 folds = xrange(0,5)
+dimensions = 2
 
 summary = []
 
@@ -37,7 +38,7 @@ for fold in folds:
 	print "LIM\tACC\tBAC\n---\t---\t---"
 
 	for limit in limits:
-		configuration = {'radius': radius, 'grain': grain, 'limit': limit}
+		configuration = {'radius': radius, 'grain': grain, 'limit': limit, 'dimensions': dimensions}
 		
 		eec = EEC(dataset,configuration,EECApproach.random)
 		eec.predict()

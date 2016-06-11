@@ -15,7 +15,7 @@ import numpy as np
 import itertools
 
 import Dataset
-from Exponer import *
+from Exposer import *
 from EEC import *
 
 start = time.time()
@@ -38,16 +38,16 @@ for fold in folds:
 	for radius_i in radiuses:
 		radius = radius_i / 100.
 
-		configuration = {'radius': radius, 'grain': grain}
+		configuration = {'radius': radius, 'grain': grain, 'dimensions': 2}
 		eec = EEC(dataset,configuration)
 		eec.predict()
 
 		scores = dataset.score()
 
 		chosen_lambda = [2,3]
-		exponer = Exponer(dataset,chosen_lambda,configuration)
+		exposer = Exposer(dataset,chosen_lambda,configuration)
 		dataset.clearSupports()
-		exponer.predict()
+		exposer.predict()
 		scores2 = dataset.score()
 
 		print "%03i\t%02.0f%%\t%02.0f%%\t%02.0f%%\t%02.0f%%" % \

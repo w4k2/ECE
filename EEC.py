@@ -1,6 +1,6 @@
 from Sample import *
 from Dataset import *
-from Exponer import *
+from Exposer import *
 
 import itertools
 import random
@@ -18,7 +18,8 @@ class EEC:
 		self.dataset = dataset
 		self.approach = approach
 		self.configuration = configuration
-		self.combinations = list(itertools.combinations(range(0, dataset.features), 2))
+		self.dimensions = configuration['dimensions']
+		self.combinations = list(itertools.combinations(range(0, dataset.features), self.dimensions))
 		
 		if approach == EECApproach.random:
 			limit = self.configuration['limit']
@@ -32,5 +33,5 @@ class EEC:
 		self.dataset.clearSupports()
 		for combination in self.combinations:
 			chosen_lambda = list(combination)
-			exponer = Exponer(self.dataset,chosen_lambda,self.configuration)
-			exponer.predict()
+			exposer = Exposer(self.dataset,chosen_lambda,self.configuration)
+			exposer.predict()

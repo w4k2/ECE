@@ -14,7 +14,7 @@ import time
 import numpy as np
 
 import Dataset
-from Exponer import *
+from Exposer import *
 
 start = time.time()
 
@@ -35,10 +35,10 @@ for fold in folds:
 		
 	for grain in grains:
 		configuration = {'grain': grain, 'radius': radius}
-		exponer = Exponer(dataset, chosen_lambda, configuration)
+		exposer = Exposer(dataset, chosen_lambda, configuration)
 
 		dataset.clearSupports()
-		exponer.predict()
+		exposer.predict()
 		scores = dataset.score()
 		print "%03i\t%02.0f%%\t%02.0f%%\t%02.0f%%\t%02.0f%%" % \
 			(grain, \

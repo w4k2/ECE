@@ -7,46 +7,79 @@ import operator
 import png
 import functools
 
-class ExponerParticipation(Enum):
+class ExposerParticipation(Enum):
 	lone = 1
 	theta1 = 2
 	theta2 = 3
 
-class Exponer(object):
-	def __init__(self, dataset, chosen_lambda, configuration, exponerParticipation = ExponerParticipation.lone):
+class Exposer(object):
+	def __init__(self, dataset, chosen_lambda, configuration, exposerParticipation = ExposerParticipation.lone):
 		self.dataset = dataset
-		self.exponerParticipation = exponerParticipation
+		self.exposerParticipation = exposerParticipation
 		self.configuration = configuration
+		
 		self.grain = configuration['grain']
 		self.radius = configuration['radius']
+		self.dimensions = len(chosen_lambda)
+
 		self.chosen_lambda = chosen_lambda
 		self.dbname = dataset.dbname
 		self.classes = dataset.classes
-		self.dimensions = 2
 
-		self.matrix = [0] * (int) (math.pow(self.grain,2) * self.classes)
+		self.matrix = [0] * (int) (math.pow(self.grain,self.dimensions) * self.classes)
 		radius_m = int(self.radius * self.grain)
+
+		base_vectors = self.base_vectors(radius_m)
 
 		# Iterujemy probki
 		for sample in dataset.samples:
 			label = sample.label
 			features = [sample.features[index] for index in chosen_lambda]
 			location = np.multiply(features, self.grain).astype(int)
-			for x in xrange(location[0]-radius_m,location[0]+radius_m):
-				for y in xrange(location[1]-radius_m,location[1]+radius_m):
-					if x < 0 or x >= self.grain or y < 0 or y >= self.grain:
-						continue
-					vector = [x, y]
-					point = [float(x) / self.grain, float(y) / self.grain]
-					distance = math.sqrt(sum([n**2 for n in map(operator.sub,point,features)]))
-					if distance < self.radius:
-						influence = self.radius - distance
-						pos = self.position(vector,label)
-						self.matrix[pos] += influence
 
-		self.matrix = np.array(self.matrix).reshape(self.grain**2,-1)
+			for base_vector in base_vectors:
+				vector = map(operator.add, base_vector, location)
+				overflow = False
+				for i in xrange(0,self.dimensions):
+					if vector[i] < 0 or vector[i] >= self.grain:
+						overflow = True
+						continue
+				if overflow:
+					continue
+
+				point = np.array(vector).astype(float) / self.grain
+				distance = math.sqrt(sum([n**2 for n in map(operator.sub,point,features)]))
+				if distance < self.radius:
+					influence = self.radius - distance
+					pos = self.position(vector,label)
+					self.matrix[pos] += influence
+
+		self.matrix = np.array(self.matrix).reshape(self.grain**self.dimensions,-1)
 		self.matrix /= np.amax(self.matrix, axis=0)
 
+	def base_vectors(self,radius_m):
+		g = 2 * radius_m + 1
+		gross = pow(g,self.dimensions)
+		move = [- radius_m] * self.dimensions
+
+		v = [-1] * self.dimensions
+		z = [1] * self.dimensions
+
+		for i in xrange(1,self.dimensions):
+			z[i] = z[i-1] * g
+
+		base_vectors = []
+		for i in xrange(0,gross):
+			for j in xrange(0, self.dimensions):
+				if i % z[j] == 0:
+					v[j] += 1
+				if v[j] == g:
+					v[j] = 0
+			u = map(operator.add, v, move)
+			base_vectors.append(list(u))
+
+		return base_vectors
+			
 	def position(self,p,label=0):
 		acc = 0
 		g = 1
@@ -61,14 +94,16 @@ class Exponer(object):
 		for sample in self.dataset.test:
 			features = [sample.features[index] for index in self.chosen_lambda]
 			location = np.multiply(features, self.grain).astype(int)
-			if location[0] == self.grain:
-				location[0] = self.grain - 1
-			if location[1] == self.grain:
-				location[1] = self.grain - 1
+			for index, element in enumerate(location):
+				if location[index] == self.grain:
+					location[index] = self.grain - 1
+
 			pos = self.position(location) / self.classes
 			support = self.matrix[pos]
 
-			if self.exponerParticipation == ExponerParticipation.lone:
+			#print support
+
+			if self.exposerParticipation == ExposerParticipation.lone:
 				sample.support += support
 
 			sample.decidePrediction()
