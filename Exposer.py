@@ -109,7 +109,6 @@ class Exposer(object):
 		return label + self.dataset.classes * acc
 
 	def predict(self):
-		#print "PREDICT"
 		for sample in self.dataset.test:
 			features = [sample.features[index] for index in self.chosen_lambda]
 			location = np.multiply(features, self.grain).astype(int)
@@ -120,17 +119,13 @@ class Exposer(object):
 			pos = self.position(location) / self.dataset.classes
 			support = self.matrix[pos]
 
-			#print support
-
 			if self.exposerParticipation == ExposerParticipation.lone:
 				sample.support += support
 
 			if self.exposerParticipation == ExposerParticipation.theta1:
-				#print support
 				sample.support += self.theta * np.array(support)
 
 			if self.exposerParticipation == ExposerParticipation.theta2:
-				#print support
 				sample.support += map(operator.mul, self.thetas, support)
 
 			sample.decidePrediction()
