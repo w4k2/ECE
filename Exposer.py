@@ -64,7 +64,6 @@ class Exposer(object):
 			for index, value in enumerate(vector):
 				if value > treshold:
 					t = value - np.mean(vector)
-#					print "v = %s, t = %f" % (str(vector), t)
 					self.thetas[index] += t
 					thetas_count[index] += 1
 		self.thetas = map(operator.div, self.thetas, thetas_count)
@@ -125,6 +124,14 @@ class Exposer(object):
 
 			if self.exposerParticipation == ExposerParticipation.lone:
 				sample.support += support
+
+			if self.exposerParticipation == ExposerParticipation.theta1:
+				#print support
+				sample.support += self.theta * np.array(support)
+
+			if self.exposerParticipation == ExposerParticipation.theta2:
+				#print support
+				sample.support += map(operator.mul, self.thetas, support)
 
 			sample.decidePrediction()
 		

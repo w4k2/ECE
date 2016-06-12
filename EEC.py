@@ -14,10 +14,11 @@ class EECApproach(Enum):
 	heuristic = 3
 
 class EEC:
-	def __init__(self, dataset, configuration = {}, approach = EECApproach.brutal):
+	def __init__(self, dataset, configuration = {}, approach = EECApproach.brutal, exposerParticipation = ExposerParticipation.lone):
 		self.dataset = dataset
 		self.approach = approach
 		self.configuration = configuration
+		self.exposerParticipation = exposerParticipation
 		self.dimensions = configuration['dimensions']
 		self.combinations = list(itertools.combinations(range(0, dataset.features), self.dimensions))
 		
@@ -33,5 +34,5 @@ class EEC:
 		self.dataset.clearSupports()
 		for combination in self.combinations:
 			chosen_lambda = list(combination)
-			exposer = Exposer(self.dataset,chosen_lambda,self.configuration)
+			exposer = Exposer(self.dataset,chosen_lambda,self.configuration,self.exposerParticipation)
 			exposer.predict()

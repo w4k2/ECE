@@ -28,7 +28,7 @@ for fold in folds:
 	for dimensions in dimensialities:
 		configuration = {'radius': .2, 'grain': grain, 'limit': limit, 'dimensions': dimensions}
 		dataset.clearSupports()
-		eec = EEC(dataset,configuration,EECApproach.random)
+		eec = EEC(dataset,configuration,EECApproach.random,ExposerParticipation.theta2)
 		eec.predict()
 
 		scores = dataset.score()
