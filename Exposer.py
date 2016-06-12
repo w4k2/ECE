@@ -56,10 +56,21 @@ class Exposer(object):
 
 		# Wyliczamy thety
 		self.thetas = [0] * self.dataset.classes
+		thetas_count = [0] * self.dataset.classes
 
+		treshold = .75
 		for vector in self.matrix:
-			pass
-#		print "thetas = %s" % self.thetas
+			#print vector
+			for index, value in enumerate(vector):
+				if value > treshold:
+					t = value - np.mean(vector)
+#					print "v = %s, t = %f" % (str(vector), t)
+					self.thetas[index] += t
+					thetas_count[index] += 1
+		self.thetas = map(operator.div, self.thetas, thetas_count)
+		self.theta = np.mean(self.thetas)
+#		print "thetas = %s [%f]" % (self.thetas, self.theta)
+#		print "thetas c = %s" % thetas_count
 
 
 	def base_vectors(self,radius_m):
