@@ -12,7 +12,7 @@ from EEC import *
 
 dataset = Dataset('data/iris.csv','iris')
 
-limit = 4
+limit = 3
 dimensialities = xrange(1,4)
 folds = xrange(0,1)
 grain = 30

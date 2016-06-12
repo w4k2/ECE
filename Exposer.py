@@ -14,29 +14,24 @@ class ExposerParticipation(Enum):
 
 class Exposer(object):
 	def __init__(self, dataset, chosen_lambda, configuration, exposerParticipation = ExposerParticipation.lone):
-		self.dataset = dataset
-		self.exposerParticipation = exposerParticipation
-		self.configuration = configuration
+		self.dataset = dataset 								# Zbior danych
+		self.exposerParticipation = exposerParticipation 	# Udzial wag w glosowaniu
+		self.grain = configuration['grain']					# Liczba kwantow
+		self.radius = configuration['radius']				# Promien oddzialywania
+		self.chosen_lambda = chosen_lambda					# Wektor cech
+		self.dimensions = len(self.chosen_lambda)			# Liczba wymiarow
+
+		# Tworzymy pusta macierz
+		self.matrix = [0] * (int) (math.pow(self.grain,self.dimensions) * self.dataset.classes)
 		
-		self.grain = configuration['grain']
-		self.radius = configuration['radius']
-		self.dimensions = len(chosen_lambda)
-
-		self.chosen_lambda = chosen_lambda
-		self.dbname = dataset.dbname
-		self.classes = dataset.classes
-
+		# Wektor pomocniczy do wyliczania pozycji
 		self.g = [1] * self.dimensions
 		for i in xrange(1,self.dimensions):
 			self.g[i] = self.g[i-1] * self.grain
-
-		self.matrix = [0] * (int) (math.pow(self.grain,self.dimensions) * self.classes)
+				
+		# Naswietlamy macierz
 		radius_m = int(self.radius * self.grain)
-
 		base_vectors = self.base_vectors(radius_m)
-
-		#print "TEACH"
-		# Iterujemy probki
 		for sample in dataset.samples:
 			label = sample.label
 			features = [sample.features[index] for index in chosen_lambda]
@@ -59,8 +54,18 @@ class Exposer(object):
 		self.matrix = np.array(self.matrix).reshape(self.grain**self.dimensions,-1)
 		self.matrix /= np.amax(self.matrix, axis=0)
 
+		# Wyliczamy thety
+		self.thetas = [0] * self.dataset.classes
+
+		for vector in self.matrix:
+			pass
+#		print "thetas = %s" % self.thetas
+
 
 	def base_vectors(self,radius_m):
+		# Tym przyspieszymy sobie algorytm
+		# Dziala tak samo, a jedyny negatywny skutek to skokowosc w promieniu.
+
 		g = 2 * radius_m + 1
 		gross = pow(g,self.dimensions)
 		move = [- radius_m] * self.dimensions
@@ -91,7 +96,7 @@ class Exposer(object):
 		acc = 0
 		for i in xrange(1,self.dimensions+1):
 			acc += p[i-1] * self.g[i-1]
-		return label + self.classes * acc
+		return label + self.dataset.classes * acc
 
 	def predict(self):
 		#print "PREDICT"
@@ -102,7 +107,7 @@ class Exposer(object):
 				if location[index] == self.grain:
 					location[index] = self.grain - 1
 
-			pos = self.position(location) / self.classes
+			pos = self.position(location) / self.dataset.classes
 			support = self.matrix[pos]
 
 			#print support
@@ -151,4 +156,3 @@ class Exposer(object):
 		f = open(filename, 'wb')
 		w = png.Writer(self.grain, self.grain)
 		w.write(f, image) ; f.close()
-		
