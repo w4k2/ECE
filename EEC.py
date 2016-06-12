@@ -20,7 +20,10 @@ class EEC:
 		self.configuration = configuration
 		self.exposerParticipation = exposerParticipation
 		self.dimensions = configuration['dimensions']
-		self.combinations = list(itertools.combinations(range(0, dataset.features), self.dimensions))
+		self.combinations = []
+
+		for dimension in self.dimensions:
+			self.combinations += list(itertools.combinations(range(0, dataset.features), dimension))
 		
 		if approach == EECApproach.random:
 			limit = self.configuration['limit']
@@ -42,6 +45,8 @@ class EEC:
 			little_exposers = little_exposers[0:limit]
 			for little_exposer in little_exposers:
 				self.combinations.append((little_exposer.chosen_lambda))
+
+#		print self.combinations
 
 	def __str__(self):
 		return "Ensemble on %s, with %s approach on %i lambdas\nConfigured with: %s" % (self.dataset, self.approach, len(self.combinations), self.configuration)

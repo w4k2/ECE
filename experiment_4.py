@@ -27,7 +27,7 @@ grain = 10
 radius = 1
 limits = xrange(1,31)
 folds = xrange(0,5)
-dimensions = 2
+dimensions = [2]
 
 summary = []
 

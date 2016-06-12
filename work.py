@@ -10,13 +10,14 @@ import Dataset
 from Exposer import *
 from EEC import *
 
-dataset = Dataset('data/heart.csv','heart')
+dataset = Dataset('data/iris.csv','iris')
 
 limit = 3
 pool = 10
-dimensialities = xrange(1,7)
+dimensions = [1, 2, 3]
 folds = xrange(0,1)
-grain = 10
+grain = 20
+radiuses = xrange(1,30,1)
 
 start = time.time()
 
@@ -24,17 +25,18 @@ for fold in folds:
 	dataset.setCV(fold)
 
 	print "\n| %s, fold %i" % (dataset, fold)
-	print "DIM\tACC\tBAC\n---\t---\t---"
+	print "RAD\tACC\tBAC\n---\t---\t---"
 
-	for dimensions in dimensialities:
-		configuration = {'radius': .2, 'grain': grain, 'limit': limit, 'dimensions': dimensions, 'pool': pool}
+	for radius_i in radiuses:
+		radius = radius_i / 100.
+		configuration = {'radius': radius, 'grain': grain, 'limit': limit, 'dimensions': dimensions, 'pool': pool}
 		dataset.clearSupports()
-		eec = EEC(dataset,configuration,EECApproach.heuristic,ExposerParticipation.theta2)
+		eec = EEC(dataset,configuration)
 		eec.predict()
 
 		scores = dataset.score()
 		print "%03i\t%02.0f%%\t%02.0f%%" % \
-			(dimensions, \
+			(radius_i, \
 			scores['accuracy']*100, \
 			scores['bac']*100)
 

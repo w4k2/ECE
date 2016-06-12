@@ -56,7 +56,7 @@ class Exposer(object):
 
 		# Wyliczamy thety
 		self.thetas = [0] * self.dataset.classes
-		thetas_count = [0] * self.dataset.classes
+		thetas_count = [1] * self.dataset.classes
 
 		treshold = .75
 		for vector in self.matrix:

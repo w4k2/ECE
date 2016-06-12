@@ -38,7 +38,7 @@ for fold in folds:
 	for radius_i in radiuses:
 		radius = radius_i / 100.
 
-		configuration = {'radius': radius, 'grain': grain, 'dimensions': 2}
+		configuration = {'radius': radius, 'grain': grain, 'dimensions': [2]}
 		eec = EEC(dataset,configuration)
 		eec.predict()
 
