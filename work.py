@@ -10,13 +10,13 @@ import Dataset
 from Exposer import *
 from EEC import *
 
-dataset = Dataset('data/iris.csv','iris')
+dataset = Dataset('data/heart.csv','heart')
 
 limit = 3
 pool = 10
-dimensialities = xrange(1,4)
+dimensialities = xrange(1,7)
 folds = xrange(0,1)
-grain = 30
+grain = 10
 
 start = time.time()
 
@@ -29,7 +29,7 @@ for fold in folds:
 	for dimensions in dimensialities:
 		configuration = {'radius': .2, 'grain': grain, 'limit': limit, 'dimensions': dimensions, 'pool': pool}
 		dataset.clearSupports()
-		eec = EEC(dataset,configuration,EECApproach.heuristic,ExposerParticipation.lone)
+		eec = EEC(dataset,configuration,EECApproach.heuristic,ExposerParticipation.theta2)
 		eec.predict()
 
 		scores = dataset.score()
