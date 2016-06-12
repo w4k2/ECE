@@ -26,11 +26,16 @@ class Exposer(object):
 		self.dbname = dataset.dbname
 		self.classes = dataset.classes
 
+		self.g = [1] * self.dimensions
+		for i in xrange(1,self.dimensions):
+			self.g[i] = self.g[i-1] * self.grain
+
 		self.matrix = [0] * (int) (math.pow(self.grain,self.dimensions) * self.classes)
 		radius_m = int(self.radius * self.grain)
 
 		base_vectors = self.base_vectors(radius_m)
 
+		#print "TEACH"
 		# Iterujemy probki
 		for sample in dataset.samples:
 			label = sample.label
@@ -38,7 +43,7 @@ class Exposer(object):
 			location = np.multiply(features, self.grain).astype(int)
 
 			for base_vector in base_vectors:
-				vector = map(operator.add, base_vector, location)
+				vector = map(operator.add, base_vector[0], location)
 				overflow = False
 				for i in xrange(0,self.dimensions):
 					if vector[i] < 0 or vector[i] >= self.grain:
@@ -47,20 +52,20 @@ class Exposer(object):
 				if overflow:
 					continue
 
-				point = np.array(vector).astype(float) / self.grain
-				distance = math.sqrt(sum([n**2 for n in map(operator.sub,point,features)]))
-				if distance < self.radius:
-					influence = self.radius - distance
-					pos = self.position(vector,label)
-					self.matrix[pos] += influence
+				influence = base_vector[1]
+				pos = self.position(vector,label)
+				self.matrix[pos] += influence
 
 		self.matrix = np.array(self.matrix).reshape(self.grain**self.dimensions,-1)
 		self.matrix /= np.amax(self.matrix, axis=0)
+
 
 	def base_vectors(self,radius_m):
 		g = 2 * radius_m + 1
 		gross = pow(g,self.dimensions)
 		move = [- radius_m] * self.dimensions
+
+		point = [0] * self.dimensions
 
 		v = [-1] * self.dimensions
 		z = [1] * self.dimensions
@@ -76,21 +81,20 @@ class Exposer(object):
 				if v[j] == g:
 					v[j] = 0
 			u = map(operator.add, v, move)
-			base_vectors.append(list(u))
+			distance = math.sqrt(sum([n**2 for n in map(operator.sub,point,u)]))
+			if distance < radius_m:
+				base_vectors.append((list(u), (radius_m - distance)/radius_m))
 
 		return base_vectors
 			
 	def position(self,p,label=0):
 		acc = 0
-		g = 1
 		for i in xrange(1,self.dimensions+1):
-			acc += p[i-1] * g
-		#	print "Step %i: p%i = %i, g%i = %i, acc = %i" % (i, i-1, p[i-1], i-1, g, acc)
-			g *= self.grain
-		#print "Result %i" % (label + self.classes * acc)
+			acc += p[i-1] * self.g[i-1]
 		return label + self.classes * acc
 
 	def predict(self):
+		#print "PREDICT"
 		for sample in self.dataset.test:
 			features = [sample.features[index] for index in self.chosen_lambda]
 			location = np.multiply(features, self.grain).astype(int)
@@ -116,8 +120,8 @@ class Exposer(object):
 			row = ()
 			for x in xrange(0,self.grain):
 				pos = x + y * self.grain
-				pos = self,position([x, y])
-				pix = np.array(self.matrix[pos] * 255).astype(int)
+				pos = self.position([x, y])
+				pix = np.array(self.matrix[pos/self.classes] * 255).astype(int)
 				tup = tuple(pix)
 				row += tup
 			image += [row]

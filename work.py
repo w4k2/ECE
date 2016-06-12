@@ -10,23 +10,33 @@ import Dataset
 from Exposer import *
 from EEC import *
 
-dataset = Dataset('data/heart.csv','heart')
+dataset = Dataset('data/iris.csv','iris')
 
-fold = 0
-limits = xrange(1,10)
-dataset.setCV(fold)
+limit = 4
+dimensialities = xrange(1,4)
+folds = xrange(0,1)
+grain = 30
 
-print "\n| %s, fold %i" % (dataset, fold)
-print "LIM\tACC\tBAC\n---\t---\t---"
+start = time.time()
 
-for limit in limits:
-	configuration = {'radius': 0.1, 'grain': 20, 'limit': limit, 'dimensions': 2}
+for fold in folds:
+	dataset.setCV(fold)
 
-	eec = EEC(dataset,configuration,EECApproach.random)
-	eec.predict()
+	print "\n| %s, fold %i" % (dataset, fold)
+	print "DIM\tACC\tBAC\n---\t---\t---"
 
-	scores = dataset.score()
-	print "%03i\t%02.0f%%\t%02.0f%%" % \
-		(limit, \
-		scores['accuracy']*100, \
-		scores['bac']*100)
+	for dimensions in dimensialities:
+		configuration = {'radius': .2, 'grain': grain, 'limit': limit, 'dimensions': dimensions}
+		dataset.clearSupports()
+		eec = EEC(dataset,configuration,EECApproach.random)
+		eec.predict()
+
+		scores = dataset.score()
+		print "%03i\t%02.0f%%\t%02.0f%%" % \
+			(dimensions, \
+			scores['accuracy']*100, \
+			scores['bac']*100)
+
+end = time.time()
+
+print "%.3f seconds" % (end - start)

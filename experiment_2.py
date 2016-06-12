@@ -22,7 +22,7 @@ dataset = Dataset('data/iris.csv','iris')
 
 chosen_lambda = [2,3]
 grains = xrange(1,51)
-radius = 30
+radius = .3
 folds = xrange(0,5)
 
 summary = []
