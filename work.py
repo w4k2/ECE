@@ -21,7 +21,7 @@ print "LIM\tACC\tBAC\n---\t---\t---"
 
 for limit in limits:
 	configuration = {'radius': 0.1, 'grain': 20, 'limit': limit, 'dimensions': 2}
-			
+
 	eec = EEC(dataset,configuration,EECApproach.random)
 	eec.predict()
 
