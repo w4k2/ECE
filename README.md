@@ -71,6 +71,18 @@ Zwyczajna akumulacja wsparć z wielu eksponerów.
 
 ### One per class in exponer
 
+#### Experiment 5
+
+	dataset: heart
+	grain: 10
+	radius: 100
+	
+	testing random exponers limits from 1:30
+	with all participations
+
+![image](plots/experiment_5.png)
+
+
 ## Threedimensional _exponers_
 
 ## Joint model
