@@ -85,6 +85,17 @@ Zwyczajna akumulacja wsparć z wielu eksponerów.
 
 ## Threedimensional _exponers_
 
+#### Experiment 6
+
+	dataset: iris
+	grain: 20
+	exponers: brutal exposers with limit 8
+	
+	testing radiuses in 1:30
+	2D vs 3D
+
+![image](plots/experiment_6.png)
+
 ## Joint model
 
 Akumulujmy eksponery 2D i 3D.
