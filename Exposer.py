@@ -58,16 +58,16 @@ class Exposer(object):
 		self.thetas = [0] * self.dataset.classes
 		thetas_count = [1] * self.dataset.classes
 
-		treshold = .75
+		treshold = .5
 		for vector in self.matrix:
 			#print vector
 			for index, value in enumerate(vector):
 				if value > treshold:
-					t = value - np.mean(vector)
+					t = np.sum(vector) - value
 					self.thetas[index] += t
 					thetas_count[index] += 1
 		self.thetas = map(operator.div, self.thetas, thetas_count)
-		self.theta = np.mean(self.thetas)
+		self.theta = np.amin(self.thetas)
 #		print "thetas = %s [%f]" % (self.thetas, self.theta)
 #		print "thetas c = %s" % thetas_count
 

@@ -61,7 +61,7 @@ Zwyczajna akumulacja wsparć z wielu eksponerów.
 	grain: 10
 	radius: 100
 	
-	testing brutal exponers limits from 1:30
+	testing random exponers limits from 1:30
 	
 ![image](plots/experiment_4.png)
 

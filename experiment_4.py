@@ -6,7 +6,7 @@ dataset: heart
 grain: 10
 radius: 100
 
-testing brutal exponers limits from 1:30
+testing random exponers limits from 1:30
 """
 
 import csv
