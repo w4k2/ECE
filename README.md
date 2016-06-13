@@ -87,7 +87,7 @@ Zwyczajna akumulacja wsparć z wielu eksponerów.
 
 #### Experiment 6
 
-	dataset: iris
+	dataset: heart
 	grain: 20
 	exponers: brutal exposers with limit 8
 	
