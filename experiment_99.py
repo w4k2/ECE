@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 """
-Experiment 6
+Experiment 99
 
-dataset: heart
-grain: 20
-exponers: brutal exposers with limit 8
+alll datasets
+grain: 30
+exponers: brutal exposers with limit 15
 
 testing radiuses in 1:30
-2D vs 3D
+lone 2D
 """
 
 import csv

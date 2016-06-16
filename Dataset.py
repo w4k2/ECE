@@ -3,6 +3,8 @@ import csv
 import numpy as np
 import random
 
+np.seterr(divide='ignore', invalid='ignore')
+
 SEED = 123
 FOLDS = 5
 random.seed(SEED)

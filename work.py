@@ -1,19 +1,10 @@
 #!/usr/bin/env python
-"""
-Experiment 6
-
-dataset: iris
-grain: 20
-exponers: brutal exposers with limit 8
-
-testing radiuses in 1:30
-2D vs 3D
-"""
 
 import csv
 import time
 import numpy as np
 import itertools
+import sys
 
 import Dataset
 from Exposer import *
@@ -22,68 +13,35 @@ from EEC import *
 start = time.time()
 
 # Load dataset
-dataset = Dataset('data/heart.csv','heart')
+dataset = Dataset(sys.argv[1],sys.argv[1])
 
-grain = 20
-limit = 8
-radiuses = xrange(1,31,1)
-folds = xrange(0,5)
+grains = [2, 5, 10]
+limits = [1, 5, 10, 50]
+radiuses = [5, 15, 30, 100]
+fold = 0
+dimensionss = [[1], [2], [3], [4], [1,2], [2,3], [3,4], [2,5]]
 
-summary = []
+dataset.setCV(fold)
 
-for fold in folds:
-	dataset.setCV(fold)
-	summary.append([])
-	print "\n| %s, fold %i" % (dataset, fold)
-	print "RAD\tACC\tBAC\tACC\tBAC\n---\t---\t---\t---\t---"
+print "\n| %s, fold %i" % (dataset, fold)
+print "RAD GRA LIM\tACC\tBAC\tACC\tBAC\n--- --- ---\t---\t---\t---"
 	
-	for radius_i in radiuses:
-		radius = radius_i / 100.
+for radius_i in radiuses:
+	for grain in grains:
+		for limit in limits:
+			for dimensions in dimensionss:
+				radius = radius_i / 100.
 
-		configuration = {'radius': radius, 'grain': grain, 'limit': limit, 'dimensions': [2]}
-		eec = EEC(dataset,configuration,EECApproach.random,ExposerParticipation.theta1)
-		eec.predict()
-		scores = dataset.score()
+				configuration = {'radius': radius, 'grain': grain, 'limit': limit, 'dimensions': dimensions}
+				eec = EEC(dataset,configuration,EECApproach.random,ExposerParticipation.theta2)
+				eec.predict()
+				scores = dataset.score()
 
-		configuration = {'radius': radius, 'grain': grain, 'limit': limit, 'dimensions': [3]}
-		eec = EEC(dataset,configuration,EECApproach.random,ExposerParticipation.theta1)
-		eec.predict()
-		scores2 = dataset.score()
-
-		print "%03i\t%02.0f%%\t%02.0f%%\t%02.0f%%\t%02.0f%%" % \
-			(radius_i, \
-			scores['accuracy']*100, \
-			scores['bac']*100,\
-			scores2['accuracy']*100, \
-			scores2['bac']*100)
-
-		result = {
-			'accuracy1': scores['accuracy'],
-			'accuracy2': scores2['accuracy'],
-			'bac1': scores['bac'],
-			'bac2': scores2['bac']
-		}
-
-		summary[fold].append(result)
+				print "%03i %03i %03i\t%02.2f%%\t%02.2f%% %s" % \
+					(radius_i, grain, limit, \
+					scores['accuracy']*100, \
+					scores['bac']*100, str(dimensions))
 
 end = time.time()
-
-print "\n# GENERATING SUMMARY"
-filename = "results/experiment_6.csv"
-textFile = open(filename, "w")
-for index, radius in enumerate(radiuses):
-	accumulator = []
-	for fold in folds:
-		accumulator.append(summary[fold][index])
-	
-	accuracy1 = sum(e['accuracy1'] for e in accumulator) / len(accumulator)
-	accuracy2 = sum(e['accuracy2'] for e in accumulator) / len(accumulator)
-	bac1 = sum(e['bac1'] for e in accumulator) / len(accumulator)
-	bac2 = sum(e['bac2'] for e in accumulator) / len(accumulator)
-	
-	row = "% 3i, %.3f, %.3f, %.3f, %.3f\n" % (radius, accuracy1, bac1, accuracy2, bac2)
-	textFile.write(row)
-
-textFile.close()
 
 print "%.3f seconds" % (end - start)

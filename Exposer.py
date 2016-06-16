@@ -37,6 +37,14 @@ class Exposer(object):
 			features = [sample.features[index] for index in chosen_lambda]
 			location = np.multiply(features, self.grain).astype(int)
 
+			location_f = np.array(features) * self.grain
+			#print location
+			#print location_f
+			distance = math.sqrt(sum([n**2 for n in map(operator.sub,location,location_f)]))
+			#print distance
+			factor = 10-distance
+			#factor = 1
+
 			for base_vector in base_vectors:
 				vector = map(operator.add, base_vector[0], location)
 				overflow = False
@@ -47,12 +55,16 @@ class Exposer(object):
 				if overflow:
 					continue
 
-				influence = base_vector[1]
+				influence = base_vector[1] * factor
 				pos = self.position(vector,label)
 				self.matrix[pos] += influence
 
 		self.matrix = np.array(self.matrix).reshape(self.grain**self.dimensions,-1)
-		self.matrix /= np.amax(self.matrix, axis=0)
+		foo = np.amax(self.matrix, axis=0)
+		for index, value in enumerate(foo):
+			if value == 0:
+				foo[index] = 1
+		self.matrix /= foo
 
 		# Wyliczamy thety
 		self.thetas = [0] * self.dataset.classes
@@ -70,6 +82,7 @@ class Exposer(object):
 		self.theta = np.amin(self.thetas)
 #		print "thetas = %s [%f]" % (self.thetas, self.theta)
 #		print "thetas c = %s" % thetas_count
+#		self.png("image.png")
 
 
 	def base_vectors(self,radius_m):
@@ -139,7 +152,7 @@ class Exposer(object):
 			for x in xrange(0,self.grain):
 				pos = x + y * self.grain
 				pos = self.position([x, y])
-				pix = np.array(self.matrix[pos/self.classes] * 255).astype(int)
+				pix = np.array(self.matrix[pos/self.dataset.classes] * 255).astype(int)
 				tup = tuple(pix)
 				row += tup
 			image += [row]
