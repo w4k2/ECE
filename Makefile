@@ -2,6 +2,9 @@ all:
 	rm -f *.pyc
 	./work.py
 
+docs:
+	pycco *.py
+
 experiment_1:
 	./experiment_1.py
 	./experiment_1.gnu

@@ -22,8 +22,8 @@ dataset = Dataset('data/iris.csv','iris')
 
 chosen_lambda = [2,3]
 grain = 50
-radiuses = xrange(1,100,1)
-folds = xrange(0,5)
+radiuses = xrange(10,31,4)
+folds = xrange(0,1)
 dimensions = 2
 
 summary = []
@@ -36,8 +36,13 @@ for fold in folds:
 		
 	for radius_i in radiuses:
 		radius = radius_i / 100.
-		configuration = {'radius': radius, 'grain': grain}
-		exposer = Exposer(dataset, chosen_lambda,configuration)
+		configuration = {
+			'radius': radius, 
+			'grain': grain,
+			'exposerParticipation': ExposerParticipation.lone,
+			'chosenLambda': chosen_lambda
+		}
+		exposer = Exposer(dataset, configuration)
 
 		dataset.clearSupports()
 		exposer.predict()
@@ -50,6 +55,8 @@ for fold in folds:
 			scores['bac']*100)
 
 		summary[fold].append(scores)
+
+		exposer.png('preview.png')
 	#	print "score %.2f" % scores['accuracy']
 
 end = time.time()

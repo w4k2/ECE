@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>generator_1.py</title>
+  <link rel="stylesheet" href="pycco.css">
+</head>
+<body>
+<div id='container'>
+  <div id="background"></div>
+  <div class='section'>
+    <div class='docs'><h1>generator_1.py</h1></div>
+  </div>
+  <div class='clearall'>
+  <div class='section' id='section-0'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-0'>#</a>
+      </div>
+      
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">csv</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">itertools</span>
+
+<span class="kn">from</span> <span class="nn">Dataset</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">Exposer</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+<span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;data/iris.csv&#39;</span>
+<span class="n">dbname</span> <span class="o">=</span> <span class="s1">&#39;iris&#39;</span>
+<span class="n">dataset</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="n">dbname</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">dataset</span>
+
+<span class="n">grain</span> <span class="o">=</span> <span class="mi">30</span>
+<span class="n">radius</span> <span class="o">=</span> <span class="mf">0.1</span>
+
+<span class="n">combinations</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">permutations</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">dataset</span><span class="o">.</span><span class="n">features</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span>	
+
+<span class="k">for</span> <span class="n">chosen_lambda</span> <span class="ow">in</span> <span class="n">combinations</span><span class="p">:</span>	
+	<span class="k">print</span> <span class="n">chosen_lambda</span>
+	<span class="n">configuration</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;radius&#39;</span><span class="p">:</span> <span class="n">radius</span><span class="p">,</span> <span class="s1">&#39;grain&#39;</span><span class="p">:</span> <span class="n">grain</span><span class="p">}</span>
+		
+	<span class="n">exposer</span> <span class="o">=</span> <span class="n">Exposer</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">chosen_lambda</span><span class="p">,</span> <span class="n">configuration</span><span class="p">)</span>
+	<span class="n">exposer</span><span class="o">.</span><span class="n">png</span><span class="p">(</span><span class="s2">&quot;exposer_</span><span class="si">%s</span><span class="s2">_</span><span class="si">%i</span><span class="s2">_</span><span class="si">%i</span><span class="s2">_g_</span><span class="si">%i</span><span class="s2">_r_</span><span class="si">%03i</span><span class="s2">.png&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">dbname</span><span class="p">,</span> <span class="n">chosen_lambda</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">chosen_lambda</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">grain</span><span class="p">,</span> <span class="n">radius</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">))</span>
+
+<span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">dataset</span><span class="o">.</span><span class="n">features</span><span class="p">):</span>
+	<span class="n">configuration</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;radius&#39;</span><span class="p">:</span> <span class="n">radius</span><span class="p">,</span> <span class="s1">&#39;grain&#39;</span><span class="p">:</span> <span class="n">grain</span><span class="p">}</span>
+	<span class="n">exposer</span> <span class="o">=</span> <span class="n">Exposer</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="p">],</span> <span class="n">configuration</span><span class="p">)</span>
+	<span class="n">exposer</span><span class="o">.</span><span class="n">png</span><span class="p">(</span><span class="s2">&quot;exponer_</span><span class="si">%s</span><span class="s2">_</span><span class="si">%i</span><span class="s2">_</span><span class="si">%i</span><span class="s2">_g_</span><span class="si">%i</span><span class="s2">_r_</span><span class="si">%03i</span><span class="s2">.png&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">dbname</span><span class="p">,</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">grain</span><span class="p">,</span> <span class="n">radius</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">))</span>
+
+<span class="n">grain</span> <span class="o">=</span> <span class="mi">75</span>
+<span class="n">chosen_lambda</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
+
+<span class="k">for</span> <span class="n">radius_i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">25</span><span class="p">,</span><span class="mi">475</span><span class="p">,</span><span class="mi">25</span><span class="p">):</span>
+	<span class="n">radius</span> <span class="o">=</span> <span class="n">radius_i</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>	
+	<span class="k">print</span> <span class="n">chosen_lambda</span>
+	<span class="n">configuration</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;radius&#39;</span><span class="p">:</span> <span class="n">radius</span><span class="p">,</span> <span class="s1">&#39;grain&#39;</span><span class="p">:</span> <span class="n">grain</span><span class="p">}</span>
+	<span class="n">exposer</span> <span class="o">=</span> <span class="n">Exposer</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">chosen_lambda</span><span class="p">,</span> <span class="n">configuration</span><span class="p">)</span>
+	<span class="n">exposer</span><span class="o">.</span><span class="n">png</span><span class="p">(</span><span class="s2">&quot;exposer_</span><span class="si">%s</span><span class="s2">_</span><span class="si">%i</span><span class="s2">_</span><span class="si">%i</span><span class="s2">_g_</span><span class="si">%i</span><span class="s2">_r_</span><span class="si">%03i</span><span class="s2">.png&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">dbname</span><span class="p">,</span> <span class="n">chosen_lambda</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">chosen_lambda</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">grain</span><span class="p">,</span> <span class="n">radius</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">))</span>
+
+</pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+</div>
+</body>
