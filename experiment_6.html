@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>experiment_6.py</title>
+  <link rel="stylesheet" href="pycco.css">
+</head>
+<body>
+<div id='container'>
+  <div id="background"></div>
+  <div class='section'>
+    <div class='docs'><h1>experiment_6.py</h1></div>
+  </div>
+  <div class='clearall'>
+  <div class='section' id='section-0'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-0'>#</a>
+      </div>
+      <p>Experiment 6</p>
+<p>dataset: heart
+grain: 20
+exponers: brutal exposers with limit 8</p>
+<p>testing radiuses in 1:30
+2D vs 3D</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">csv</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">itertools</span>
+
+<span class="kn">import</span> <span class="nn">Dataset</span>
+<span class="kn">from</span> <span class="nn">Exposer</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">EEC</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-1'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-1'>#</a>
+      </div>
+      <p>Load dataset</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="n">dataset</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="s1">&#39;data/heart.csv&#39;</span><span class="p">,</span><span class="s1">&#39;heart&#39;</span><span class="p">)</span>
+
+<span class="n">grain</span> <span class="o">=</span> <span class="mi">20</span>
+<span class="n">limit</span> <span class="o">=</span> <span class="mi">8</span>
+<span class="n">radiuses</span> <span class="o">=</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">31</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">folds</span> <span class="o">=</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span>
+
+<span class="n">summary</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="k">for</span> <span class="n">fold</span> <span class="ow">in</span> <span class="n">folds</span><span class="p">:</span>
+	<span class="n">dataset</span><span class="o">.</span><span class="n">setCV</span><span class="p">(</span><span class="n">fold</span><span class="p">)</span>
+	<span class="n">summary</span><span class="o">.</span><span class="n">append</span><span class="p">([])</span>
+	<span class="k">print</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">| </span><span class="si">%s</span><span class="s2">, fold </span><span class="si">%i</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">fold</span><span class="p">)</span>
+	<span class="k">print</span> <span class="s2">&quot;RAD</span><span class="se">\t</span><span class="s2">ACC</span><span class="se">\t</span><span class="s2">BAC</span><span class="se">\t</span><span class="s2">ACC</span><span class="se">\t</span><span class="s2">BAC</span><span class="se">\n</span><span class="s2">---</span><span class="se">\t</span><span class="s2">---</span><span class="se">\t</span><span class="s2">---</span><span class="se">\t</span><span class="s2">---</span><span class="se">\t</span><span class="s2">---&quot;</span>
+	
+	<span class="k">for</span> <span class="n">radius_i</span> <span class="ow">in</span> <span class="n">radiuses</span><span class="p">:</span>
+		<span class="n">radius</span> <span class="o">=</span> <span class="n">radius_i</span> <span class="o">/</span> <span class="mf">100.</span>
+
+		<span class="n">configuration</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;radius&#39;</span><span class="p">:</span> <span class="n">radius</span><span class="p">,</span> <span class="s1">&#39;grain&#39;</span><span class="p">:</span> <span class="n">grain</span><span class="p">,</span> <span class="s1">&#39;limit&#39;</span><span class="p">:</span> <span class="n">limit</span><span class="p">,</span> <span class="s1">&#39;dimensions&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">]}</span>
+		<span class="n">eec</span> <span class="o">=</span> <span class="n">EEC</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span><span class="n">configuration</span><span class="p">,</span><span class="n">EECApproach</span><span class="o">.</span><span class="n">random</span><span class="p">,</span><span class="n">ExposerParticipation</span><span class="o">.</span><span class="n">theta1</span><span class="p">)</span>
+		<span class="n">eec</span><span class="o">.</span><span class="n">predict</span><span class="p">()</span>
+		<span class="n">scores</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">score</span><span class="p">()</span>
+
+		<span class="n">configuration</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;radius&#39;</span><span class="p">:</span> <span class="n">radius</span><span class="p">,</span> <span class="s1">&#39;grain&#39;</span><span class="p">:</span> <span class="n">grain</span><span class="p">,</span> <span class="s1">&#39;limit&#39;</span><span class="p">:</span> <span class="n">limit</span><span class="p">,</span> <span class="s1">&#39;dimensions&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">3</span><span class="p">]}</span>
+		<span class="n">eec</span> <span class="o">=</span> <span class="n">EEC</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span><span class="n">configuration</span><span class="p">,</span><span class="n">EECApproach</span><span class="o">.</span><span class="n">random</span><span class="p">,</span><span class="n">ExposerParticipation</span><span class="o">.</span><span class="n">theta1</span><span class="p">)</span>
+		<span class="n">eec</span><span class="o">.</span><span class="n">predict</span><span class="p">()</span>
+		<span class="n">scores2</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">score</span><span class="p">()</span>
+
+		<span class="k">print</span> <span class="s2">&quot;</span><span class="si">%03i</span><span class="se">\t</span><span class="si">%02.0f%%</span><span class="se">\t</span><span class="si">%02.0f%%</span><span class="se">\t</span><span class="si">%02.0f%%</span><span class="se">\t</span><span class="si">%02.0f%%</span><span class="s2">&quot;</span> <span class="o">%</span> \
+			<span class="p">(</span><span class="n">radius_i</span><span class="p">,</span> \
+			<span class="n">scores</span><span class="p">[</span><span class="s1">&#39;accuracy&#39;</span><span class="p">]</span><span class="o">*</span><span class="mi">100</span><span class="p">,</span> \
+			<span class="n">scores</span><span class="p">[</span><span class="s1">&#39;bac&#39;</span><span class="p">]</span><span class="o">*</span><span class="mi">100</span><span class="p">,</span>\
+			<span class="n">scores2</span><span class="p">[</span><span class="s1">&#39;accuracy&#39;</span><span class="p">]</span><span class="o">*</span><span class="mi">100</span><span class="p">,</span> \
+			<span class="n">scores2</span><span class="p">[</span><span class="s1">&#39;bac&#39;</span><span class="p">]</span><span class="o">*</span><span class="mi">100</span><span class="p">)</span>
+
+		<span class="n">result</span> <span class="o">=</span> <span class="p">{</span>
+			<span class="s1">&#39;accuracy1&#39;</span><span class="p">:</span> <span class="n">scores</span><span class="p">[</span><span class="s1">&#39;accuracy&#39;</span><span class="p">],</span>
+			<span class="s1">&#39;accuracy2&#39;</span><span class="p">:</span> <span class="n">scores2</span><span class="p">[</span><span class="s1">&#39;accuracy&#39;</span><span class="p">],</span>
+			<span class="s1">&#39;bac1&#39;</span><span class="p">:</span> <span class="n">scores</span><span class="p">[</span><span class="s1">&#39;bac&#39;</span><span class="p">],</span>
+			<span class="s1">&#39;bac2&#39;</span><span class="p">:</span> <span class="n">scores2</span><span class="p">[</span><span class="s1">&#39;bac&#39;</span><span class="p">]</span>
+		<span class="p">}</span>
+
+		<span class="n">summary</span><span class="p">[</span><span class="n">fold</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+
+<span class="n">end</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+<span class="k">print</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2"># GENERATING SUMMARY&quot;</span>
+<span class="n">filename</span> <span class="o">=</span> <span class="s2">&quot;results/experiment_6.csv&quot;</span>
+<span class="n">textFile</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">radius</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">radiuses</span><span class="p">):</span>
+	<span class="n">accumulator</span> <span class="o">=</span> <span class="p">[]</span>
+	<span class="k">for</span> <span class="n">fold</span> <span class="ow">in</span> <span class="n">folds</span><span class="p">:</span>
+		<span class="n">accumulator</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">summary</span><span class="p">[</span><span class="n">fold</span><span class="p">][</span><span class="n">index</span><span class="p">])</span>
+	
+	<span class="n">accuracy1</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="s1">&#39;accuracy1&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">accumulator</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">accumulator</span><span class="p">)</span>
+	<span class="n">accuracy2</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="s1">&#39;accuracy2&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">accumulator</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">accumulator</span><span class="p">)</span>
+	<span class="n">bac1</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="s1">&#39;bac1&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">accumulator</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">accumulator</span><span class="p">)</span>
+	<span class="n">bac2</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="s1">&#39;bac2&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">accumulator</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">accumulator</span><span class="p">)</span>
+	
+	<span class="n">row</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">% 3i</span><span class="s2">, </span><span class="si">%.3f</span><span class="s2">, </span><span class="si">%.3f</span><span class="s2">, </span><span class="si">%.3f</span><span class="s2">, </span><span class="si">%.3f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">radius</span><span class="p">,</span> <span class="n">accuracy1</span><span class="p">,</span> <span class="n">bac1</span><span class="p">,</span> <span class="n">accuracy2</span><span class="p">,</span> <span class="n">bac2</span><span class="p">)</span>
+	<span class="n">textFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+
+<span class="n">textFile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<span class="k">print</span> <span class="s2">&quot;</span><span class="si">%.3f</span><span class="s2"> seconds&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">end</span> <span class="o">-</span> <span class="n">start</span><span class="p">)</span>
+
+</pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+</div>
+</body>
