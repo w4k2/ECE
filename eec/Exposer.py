@@ -230,7 +230,7 @@ class Exposer(object):
 #### Visualization
 The visualization of the complete _exposer_, as long as we will have only a two-dimensional screens at our computers, will be a flat PNG image. 
 
-RGB values comes here from first three classes of dataset (if we have a binary problem, only red and green channel will be populated), while the axis describes first two dimensions of _exposer_ matrix. 
+RGB values comes here from first three classes of dataset (if we have a binary problem, only red and green channel will be populated), combined with a HSV2RGB conversion, while the axis describes first two dimensions of _exposer_ matrix. 
 
 Below we can see an example visualization for the `iris` dataset with chosen lambda of `[2, 3]` for `1.0` radius and grain of `256` quants.
 

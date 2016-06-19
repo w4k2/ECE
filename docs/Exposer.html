@@ -627,7 +627,7 @@ scores = dataset.score()
       </div>
       <h4>Visualization</h4>
 <p>The visualization of the complete <em>exposer</em>, as long as we will have only a two-dimensional screens at our computers, will be a flat PNG image. </p>
-<p>RGB values comes here from first three classes of dataset (if we have a binary problem, only red and green channel will be populated), while the axis describes first two dimensions of <em>exposer</em> matrix. </p>
+<p>RGB values comes here from first three classes of dataset (if we have a binary problem, only red and green channel will be populated), combined with a HSV2RGB conversion, while the axis describes first two dimensions of <em>exposer</em> matrix. </p>
 <p>Below we can see an example visualization for the <code>iris</code> dataset with chosen lambda of <code>[2, 3]</code> for <code>1.0</code> radius and grain of <code>256</code> quants.</p>
 <p><img alt="" src="exposer_vis.png" /></p>
     </div>
