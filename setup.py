@@ -11,12 +11,13 @@ with open('LICENSE') as f:
 
 setup(
     name='eec',
-    version='0.0.1',
+    version='0.0.5',
     description='Exposer Ensemble Classifier',
     long_description=readme,
     author='Paweł Ksieniewicz',
     author_email='pawel.ksieniewicz@pwr.edu.pl',
     url='https://github.com/w4k2/eec',
+    package_data={'': ['LICENSE']},
     license=license,
     packages=find_packages(exclude=('docs'))
 )
