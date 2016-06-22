@@ -148,6 +148,7 @@ scores = dataset.score()
 				<span class="n">configuration</span> <span class="o">=</span> <span class="p">{</span>
 					<span class="s1">&#39;grain&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
 					<span class="s1">&#39;radius&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+					<span class="s1">&#39;exposerParticipation&#39;</span><span class="p">:</span> <span class="n">ExposerParticipation</span><span class="o">.</span><span class="n">lone</span><span class="p">,</span>
 					<span class="s1">&#39;chosenLambda&#39;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">combination</span><span class="p">)</span>
 				<span class="p">}</span>
 				<span class="n">e_pool</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Exposer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="p">,</span><span class="n">configuration</span><span class="p">))</span>
@@ -155,7 +156,7 @@ scores = dataset.score()
 			<span class="bp">self</span><span class="o">.</span><span class="n">combinations</span> <span class="o">=</span> <span class="p">[]</span>
 			<span class="n">e_pool</span> <span class="o">=</span> <span class="n">e_pool</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">limit</span><span class="p">]</span>
 			<span class="k">for</span> <span class="n">exposer</span> <span class="ow">in</span> <span class="n">e_pool</span><span class="p">:</span>
-				<span class="bp">self</span><span class="o">.</span><span class="n">combinations</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">exposer</span><span class="o">.</span><span class="n">chosen_lambda</span><span class="p">))</span></pre></div>
+				<span class="bp">self</span><span class="o">.</span><span class="n">combinations</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">exposer</span><span class="o">.</span><span class="n">chosenLambda</span><span class="p">))</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
