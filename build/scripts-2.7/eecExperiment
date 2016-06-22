@@ -130,12 +130,16 @@ for dbname in datasets:
 		row = "%.3f" % step
 
 		for index, model in enumerate(models):
-			accuracy = sum(e['accuracy'] for e in accumulator[index]) / len(accumulator[index])
-			bac = sum(e['bac'] for e in accumulator[index]) / len(accumulator[index])
-			sensitivity = sum(e['sensitivity'] for e in accumulator[index]) / len(accumulator[index])
-			specificity = sum(e['specificity'] for e in accumulator[index]) / len(accumulator[index])
-			ppv = sum(e['ppv'] for e in accumulator[index]) / len(accumulator[index])
-			npv = sum(e['npv'] for e in accumulator[index]) / len(accumulator[index])
+			model_accumulator = []
+			for fold in folds:
+				model_accumulator.append(accumulator[fold][index])
+
+			accuracy = sum(e['accuracy'] for e in model_accumulator) / len(model_accumulator)
+			bac = sum(e['bac'] for e in model_accumulator) / len(model_accumulator)
+			sensitivity = sum(e['sensitivity'] for e in model_accumulator) / len(model_accumulator)
+			specificity = sum(e['specificity'] for e in model_accumulator) / len(model_accumulator)
+			ppv = sum(e['ppv'] for e in model_accumulator) / len(model_accumulator)
+			npv = sum(e['npv'] for e in model_accumulator) / len(model_accumulator)
 
 			row += ", %.3f, %.3f, %.3f, %.3f, %.3f, %.3f" % (accuracy, bac, sensitivity, specificity, ppv, npv)
 
