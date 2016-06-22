@@ -53,7 +53,7 @@
       
     </div>
     <div class='code'>
-      <div class="highlight"><pre>	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">dbname</span><span class="p">):</span></pre></div>
+      <div class="highlight"><pre>	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">dbname</span><span class="p">,</span> <span class="n">resample</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -93,6 +93,20 @@
       <div class='octowrap'>
         <a class='octothorpe' href='#section-5'>#</a>
       </div>
+      <p>dumb resampling</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>		<span class="k">if</span> <span class="n">resample</span><span class="p">:</span>
+			<span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">source_samples</span><span class="p">)</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">source_samples</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">source_samples</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">resample</span><span class="p">]</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-6'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-6'>#</a>
+      </div>
       <p>Count classes</p>
     </div>
     <div class='code'>
@@ -104,10 +118,10 @@
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-6'>
+  <div class='section' id='section-7'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-6'>#</a>
+        <a class='octothorpe' href='#section-7'>#</a>
       </div>
       <p>Initialize supports</p>
     </div>
@@ -116,10 +130,10 @@
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-7'>
+  <div class='section' id='section-8'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-7'>#</a>
+        <a class='octothorpe' href='#section-8'>#</a>
       </div>
       <p>Set base sample set</p>
     </div>
@@ -128,10 +142,10 @@
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-8'>
+  <div class='section' id='section-9'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-8'>#</a>
+        <a class='octothorpe' href='#section-9'>#</a>
       </div>
       <p>Prepare CV</p>
     </div>
@@ -145,10 +159,10 @@
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-9'>
+  <div class='section' id='section-10'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-9'>#</a>
+        <a class='octothorpe' href='#section-10'>#</a>
       </div>
       
     </div>
@@ -159,10 +173,10 @@
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-10'>
+  <div class='section' id='section-11'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-10'>#</a>
+        <a class='octothorpe' href='#section-11'>#</a>
       </div>
       
     </div>
@@ -172,10 +186,10 @@
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-11'>
+  <div class='section' id='section-12'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-11'>#</a>
+        <a class='octothorpe' href='#section-12'>#</a>
       </div>
       
     </div>
@@ -191,10 +205,10 @@
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-12'>
+  <div class='section' id='section-13'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-12'>#</a>
+        <a class='octothorpe' href='#section-13'>#</a>
       </div>
       
     </div>
@@ -203,10 +217,10 @@
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-13'>
+  <div class='section' id='section-14'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-13'>#</a>
+        <a class='octothorpe' href='#section-14'>#</a>
       </div>
       <p>https://en.wikipedia.org/wiki/Confusion_matrix</p>
     </div>
@@ -235,42 +249,9 @@
 		<span class="n">npv</span> <span class="o">=</span> <span class="n">true_negatives</span> <span class="o">/</span> <span class="p">(</span><span class="n">true_negatives</span> <span class="o">+</span> <span class="n">false_negatives</span><span class="p">)</span>
 		<span class="n">bac</span> <span class="o">=</span> <span class="p">(</span><span class="n">sensitivity</span> <span class="o">+</span> <span class="n">specificity</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span> 
 
-		<span class="n">acc</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">true_positives</span> <span class="o">+</span> <span class="n">true_negatives</span><span class="p">)</span> <span class="o">/</span> <span class="nb">sum</span><span class="p">(</span><span class="n">true_positives</span> <span class="o">+</span> <span class="n">true_negatives</span> <span class="o">+</span> <span class="n">false_positives</span> <span class="o">+</span> <span class="n">false_negatives</span><span class="p">)</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-14'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-14'>#</a>
-      </div>
-      <pre><code>print confusion_matrix
-print "TP: %s" % str(true_positives)
-print "FN: %s" % str(false_negatives)
-print "FP: %s" % str(false_positives)
-print "TN: %s" % str(true_negatives)
-</code></pre>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-15'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-15'>#</a>
-      </div>
-      <pre><code>print "\nSen: %.2f" % sensitivity.mean()
-print "Spc: %.2f" % specificity.mean()
-print "PPV: %.2f" % ppv.mean()
-print "NPV: %.2f" % npv.mean()
-print "ACC: %.2f" % acc
-print "BAC: %.2f" % bac.mean()
-</code></pre>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>		<span class="n">scores</span> <span class="o">=</span> \
+		<span class="n">acc</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">true_positives</span> <span class="o">+</span> <span class="n">true_negatives</span><span class="p">)</span> <span class="o">/</span> <span class="nb">sum</span><span class="p">(</span><span class="n">true_positives</span> <span class="o">+</span> <span class="n">true_negatives</span> <span class="o">+</span> <span class="n">false_positives</span> <span class="o">+</span> <span class="n">false_negatives</span><span class="p">)</span>
+
+		<span class="n">scores</span> <span class="o">=</span> \
 		<span class="p">{</span>
 			<span class="s1">&#39;sensitivity&#39;</span><span class="p">:</span> <span class="n">sensitivity</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span>
 			<span class="s1">&#39;specificity&#39;</span><span class="p">:</span> <span class="n">specificity</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span>
@@ -284,10 +265,10 @@ print "BAC: %.2f" % bac.mean()
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-16'>
+  <div class='section' id='section-15'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-16'>#</a>
+        <a class='octothorpe' href='#section-15'>#</a>
       </div>
       
     </div>
@@ -307,10 +288,10 @@ print "BAC: %.2f" % bac.mean()
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-17'>
+  <div class='section' id='section-16'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-17'>#</a>
+        <a class='octothorpe' href='#section-16'>#</a>
       </div>
       <p>O tu sobie poradzmy z 0/0</p>
     </div>
