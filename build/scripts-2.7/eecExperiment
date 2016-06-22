@@ -1,0 +1,144 @@
+#!/usr/local/opt/python/bin/python2.7
+import sys
+import json
+import time
+import csv
+import numpy as np
+from enum import Enum
+
+from eec import Dataset
+from eec import Exposer
+from eec import ExposerParticipation
+from eec import EEC
+from eec import EECApproach
+
+configFilename = sys.argv[1]
+
+with open(configFilename) as data_file:    
+    data = json.load(data_file)
+
+datasets = data['datasets']
+
+title = data['title']
+description = data['description']
+models = data['models']
+
+subject = data['subject'][0].encode('ascii', 'ignore')
+subject_range = data['subject'][1]
+subject_range = np.arange(subject_range[0],subject_range[1],subject_range[2])
+resampling = data['resampling']
+
+print title
+print "\n" + description
+
+folds = xrange(0,5)
+
+# Preparing header
+header = "\n   "
+for model in models:
+	header += "\t%s\t   " % model["accronym"]
+header += "\n" + subject[0:3].upper()
+for model in models:
+	header += "\tACC\tBAC"
+header += "\n---"
+for model in models:
+	header += "\t---\t---"
+
+# Experiment loop
+for dbname in datasets:
+	start = time.time()
+
+	summary = []
+
+	for fold in folds:
+		dataset = Dataset('data/%s.csv' % dbname, dbname, resampling)
+		dataset.setCV(fold)
+		summary.append([])
+
+		print "\n| %s, fold %i" % (dataset, fold)
+		print header
+
+		for step in subject_range:
+			scores = []
+
+
+			# Single model processing
+			for model in models:
+				configuration = { subject: step }
+				configuration.update(model)
+				expar = configuration['exposerParticipation']
+
+				if expar == 1:
+					configuration.update({'exposerParticipation': ExposerParticipation.lone})
+				if expar == 2:
+					configuration.update({'exposerParticipation': ExposerParticipation.theta1})
+				if expar == 3:
+					configuration.update({'exposerParticipation': ExposerParticipation.theta2})
+
+
+				if model["type"] == "single":
+					exposer = Exposer(dataset, configuration)
+
+					dataset.clearSupports()
+					exposer.predict()
+
+					score = dataset.score()
+					scores += [score]
+
+				if model["type"] == "ensemble":
+					eecapp = configuration['eecApproach']
+					if eecapp == 1:
+						configuration.update({'eecApproach': EECApproach.brutal})
+					if eecapp == 2:
+						configuration.update({'eecApproach': EECApproach.random})
+					if eecapp == 3:
+						configuration.update({'eecApproach': EECApproach.heuristic})
+
+					eec = EEC(dataset,configuration)
+					eec.predict()
+
+					score = dataset.score()
+					scores += [score]
+
+			
+			summary[fold].append(scores)
+
+			row = "%s" % str(step)
+			for score in scores:
+				pass
+				row += "\t%02.0f%%\t%02.0f%%" % (\
+					score['accuracy'] * 100, \
+					score['bac'] * 100)
+
+			print row
+
+	end = time.time()
+
+	print "\n%.3f seconds" % (end - start)
+
+	print "\n# GENERATING SUMMARY"
+
+	filename = "results/%s_%s.csv" % (configFilename.split('.')[0], dbname)
+
+	textFile = open(filename, "w")
+
+	for index, step in enumerate(subject_range):
+		accumulator = []
+		for fold in folds:
+			accumulator.append(summary[fold][index])
+
+		row = "%.3f" % step
+
+		for index, model in enumerate(models):
+			accuracy = sum(e['accuracy'] for e in accumulator[index]) / len(accumulator[index])
+			bac = sum(e['bac'] for e in accumulator[index]) / len(accumulator[index])
+			sensitivity = sum(e['sensitivity'] for e in accumulator[index]) / len(accumulator[index])
+			specificity = sum(e['specificity'] for e in accumulator[index]) / len(accumulator[index])
+			ppv = sum(e['ppv'] for e in accumulator[index]) / len(accumulator[index])
+			npv = sum(e['npv'] for e in accumulator[index]) / len(accumulator[index])
+
+			row += ", %.3f, %.3f, %.3f, %.3f, %.3f, %.3f" % (accuracy, bac, sensitivity, specificity, ppv, npv)
+
+		textFile.write(row + "\n")
+
+	textFile.close()
