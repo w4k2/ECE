@@ -11,7 +11,7 @@ random.seed(SEED)
   	
 # DATASET
 class Dataset:
-	def __init__(self, filename, dbname, resample = 0):
+	def __init__(self, filename, dbname, resample = 200):
 		# Load db
 		self.dbname = dbname
 		self.source_samples = []
@@ -25,10 +25,15 @@ class Dataset:
 		# normalize
 		self.normalize()
 
-		# dumb resampling
+		print "%i samples" % len(self.source_samples)
+
 		if resample:
+			print "Resampling"
 			random.shuffle(self.source_samples)
 			self.source_samples = self.source_samples[0:resample]
+			print "%i samples" % len(self.source_samples)
+		else:
+			print "No resampling"
 
 		# Count classes
 		for sample in self.source_samples:
