@@ -73,6 +73,7 @@ class EEC:
 				configuration = {
 					'grain': 4,
 					'radius': 1,
+					'exposerParticipation': ExposerParticipation.lone,
 					'chosenLambda': list(combination)
 				}
 				e_pool.append(Exposer(self.dataset,configuration))
@@ -80,7 +81,7 @@ class EEC:
 			self.combinations = []
 			e_pool = e_pool[0:limit]
 			for exposer in e_pool:
-				self.combinations.append((exposer.chosen_lambda))
+				self.combinations.append((exposer.chosenLambda))
 
 	# === Prediction
 	def predict(self):
