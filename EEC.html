@@ -155,7 +155,13 @@ scores = dataset.score()
 
 			<span class="bp">self</span><span class="o">.</span><span class="n">combinations</span> <span class="o">=</span> <span class="p">[]</span>
 			<span class="n">i_pool</span> <span class="o">=</span> <span class="p">[]</span>
-			<span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">classes</span><span class="p">):</span></pre></div>
+			<span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">classes</span><span class="p">):</span>
+				<span class="n">n_pool</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">e_pool</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">exposer</span><span class="p">:</span> <span class="n">exposer</span><span class="o">.</span><span class="n">thetas</span><span class="p">[</span><span class="n">label</span><span class="p">],</span> <span class="n">reverse</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+				<span class="n">n_pool</span> <span class="o">=</span> <span class="n">n_pool</span><span class="p">[</span><span class="mi">0</span><span class="p">:(</span><span class="n">limit</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">classes</span><span class="p">)]</span>
+
+				<span class="k">for</span> <span class="n">exposer</span> <span class="ow">in</span> <span class="n">n_pool</span><span class="p">:</span>
+					<span class="bp">self</span><span class="o">.</span><span class="n">combinations</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">exposer</span><span class="o">.</span><span class="n">chosenLambda</span><span class="p">))</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -163,36 +169,6 @@ scores = dataset.score()
     <div class='docs'>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-7'>#</a>
-      </div>
-      <pre><code>        print "Class %i" % label
-</code></pre>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>				<span class="n">n_pool</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">e_pool</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">exposer</span><span class="p">:</span> <span class="n">exposer</span><span class="o">.</span><span class="n">thetas</span><span class="p">[</span><span class="n">label</span><span class="p">],</span> <span class="n">reverse</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-
-				<span class="n">n_pool</span> <span class="o">=</span> <span class="n">n_pool</span><span class="p">[</span><span class="mi">0</span><span class="p">:(</span><span class="n">limit</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">classes</span><span class="p">)]</span>
-
-				<span class="k">for</span> <span class="n">exposer</span> <span class="ow">in</span> <span class="n">n_pool</span><span class="p">:</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-8'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-8'>#</a>
-      </div>
-      <pre><code>            print "%s - %.2f - %s" % (str(exposer.chosenLambda), exposer.theta, str(exposer.thetas))
-</code></pre>
-    </div>
-    <div class='code'>
-      <div class="highlight"><pre>					<span class="bp">self</span><span class="o">.</span><span class="n">combinations</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">exposer</span><span class="o">.</span><span class="n">chosenLambda</span><span class="p">))</span></pre></div>
-    </div>
-  </div>
-  <div class='clearall'></div>
-  <div class='section' id='section-9'>
-    <div class='docs'>
-      <div class='octowrap'>
-        <a class='octothorpe' href='#section-9'>#</a>
       </div>
       <h3><span id="prediction" href="prediction"> Prediction</h3>
 <p></span></p>
