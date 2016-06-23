@@ -11,7 +11,7 @@ with open('LICENSE') as f:
 
 setup(
     name='eec',
-    version='0.2',
+    version='0.2.1',
     description='Exposer Ensemble Classifier',
     long_description=readme,
     author='Paweł Ksieniewicz',
