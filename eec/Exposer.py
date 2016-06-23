@@ -123,6 +123,10 @@ class Exposer(object):
 		self.thetas = [0] * self.dataset.classes
 		thetas_count = [1] * self.dataset.classes
 
+		presence = np.array([0.] * self.dataset.classes)
+
+		treshold_v = .1
+
 		# To establish measures, we calculate HSV representation of color for every sample. Like in classic RGB2HSV computation, V is a maximum value from cone-response vector and S is a product of dividing delta by V. To receive a delta for situations, where we have different number of base colors than three, we are simply dividing index of maximal value by a number of classes.
 		for index, pixel in enumerate(self.matrix):
 			cmax = np.max(pixel)
@@ -144,9 +148,23 @@ class Exposer(object):
 				self.thetas[cmax_i] += saturation
 				thetas_count[cmax_i] += 1
 
+			# New approach
+			if value > treshold_v:
+				presence[cmax_i] += 1
+
+		presence /= sum(presence)
+		t = ([1] * self.dataset.classes) - presence
+		#print "ABOVE: %s" % str(above)
+		#print "BELOW: %s" % str(below)
+		#print "PRESENCE: %s (%f)" % (str(presence), sum(presence))
+		#print "T: %s" % str(t)
+
 		# And a single measure per _exposer_ is mean value of class measures.
 		self.thetas = map(operator.div, self.thetas, thetas_count)
 		self.theta = np.mean(self.thetas)
+
+		self.thetas = t
+		self.theta = np.mean(t)
 
 	# === Prediction ===
 	def predict(self):
