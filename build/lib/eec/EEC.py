@@ -77,11 +77,20 @@ class EEC:
 					'chosenLambda': list(combination)
 				}
 				e_pool.append(Exposer(self.dataset,configuration))
-			e_pool = sorted(e_pool, key=lambda exposer: exposer.theta, reverse=True)
+
 			self.combinations = []
-			e_pool = e_pool[0:limit]
-			for exposer in e_pool:
-				self.combinations.append((exposer.chosenLambda))
+			i_pool = []
+			for label in xrange(0,self.dataset.classes):
+#				print "Class %i" % label
+				n_pool = sorted(e_pool, key=lambda exposer: exposer.thetas[label], reverse=True)
+
+				n_pool = n_pool[0:(limit/self.dataset.classes)]
+
+				for exposer in n_pool:
+#					print "%s - %.2f - %s" % (str(exposer.chosenLambda), exposer.theta, str(exposer.thetas))
+
+					self.combinations.append((exposer.chosenLambda))
+				
 
 	# === Prediction
 	def predict(self):
