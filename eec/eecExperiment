@@ -61,7 +61,6 @@ for dbname in datasets:
 		for step in subject_range:
 			scores = []
 
-
 			# Single model processing
 			for model in models:
 				if subject == "dimensions":

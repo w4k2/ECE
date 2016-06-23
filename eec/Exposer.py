@@ -154,10 +154,6 @@ class Exposer(object):
 
 		presence /= sum(presence)
 		t = ([1] * self.dataset.classes) - presence
-		#print "ABOVE: %s" % str(above)
-		#print "BELOW: %s" % str(below)
-		#print "PRESENCE: %s (%f)" % (str(presence), sum(presence))
-		#print "T: %s" % str(t)
 
 		# And a single measure per _exposer_ is mean value of class measures.
 		self.thetas = map(operator.div, self.thetas, thetas_count)
