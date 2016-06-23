@@ -64,7 +64,11 @@ for dbname in datasets:
 
 			# Single model processing
 			for model in models:
-				configuration = { subject: step }
+				if subject == "dimensions":
+					configuration = { subject: [step] }
+				else:
+					configuration = { subject: step }
+
 				configuration.update(model)
 				expar = configuration['exposerParticipation']
 
