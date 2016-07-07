@@ -59,6 +59,7 @@ class Exposer(object):
 		self.grain = configuration['grain']
 		self.radius = configuration['radius']
 		self.chosenLambda = configuration['chosenLambda']
+		self.isBonus = True
 
 		# Later, we're gathering the dataset and calculating number of data structure dimensions, from a number of features of `chosenLambda`.
 		self.dataset = dataset
@@ -136,6 +137,12 @@ class Exposer(object):
 			delta = cmax - cmin
 
 			hue = float(cmax_i) / dataset.classes
+
+			if hue != 0:
+				a = np.array(xrange(1,dataset.classes + 1,1))
+				foo = map(operator.mul, a, pixel)
+				u = sum(pixel)
+				
 			saturation = 0
 			if cmax != 0:
 				saturation = delta / cmax
@@ -180,15 +187,28 @@ class Exposer(object):
 
 			# For the **lone** participation, we simply add the support vector to the support accumulator inside the sample object.
 			if self.exposerParticipation == ExposerParticipation.lone:
-				sample.support += support
-
+				givenSupport = support
+				
 			# If it is a **theta1** participation, we increase support accumulator by a product of ensemble support and a scalar measure `theta`.
 			if self.exposerParticipation == ExposerParticipation.theta1:
-				sample.support += self.theta * np.array(support)
+				givenSupport = self.theta * np.array(support)
 
 			# When we use **theta2**, a product multiplies ensemble support and a vector measure `thetas`.
 			if self.exposerParticipation == ExposerParticipation.theta2:
-				sample.support += map(operator.mul, self.thetas, support)
+				givenSupport = map(operator.mul, self.thetas, support)
+
+			#meanSupport = np.mean(givenSupport)
+			#maxi = np.argmax(givenSupport)
+			#maxv = np.max(givenSupport)
+			#bonus = maxv - meanSupport
+			#if meanSupport != 0:
+				#print givenSupport
+				#print "M = %.3f, B = %.3f" % (meanSupport, bonus)
+				#givenSupport[maxi] += bonus
+				#print givenSupport
+
+			sample.support += givenSupport
+
 
 			# Finally, we demand on `sample` to establish a prediction, according to its accumulated support vector.
 			sample.decidePrediction()

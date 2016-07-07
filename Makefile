@@ -9,6 +9,6 @@ publish:
 	
 docset:
 	pycco eec/*.py
-	git subtree push --prefix docs origin gh-pages
+#	git subtree push --prefix docs origin gh-pages
 
 .PHONY: publish docset
