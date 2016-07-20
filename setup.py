@@ -10,7 +10,7 @@ with open('LICENSE') as f:
 
 setup(
     name='eec',
-    version='0.2.5.2',
+    version='0.2.5.4',
     description='Exposer Ensemble Classifier',
     long_description=readme,
     author='Paweł Ksieniewicz',
@@ -19,5 +19,5 @@ setup(
     package_data={'': ['LICENSE']},
     scripts=['eec/eecExperiment',],
     license=license,
-    packages=find_packages(exclude=('docs','tests'))
+    packages=find_packages(exclude=('docs','tests','README.md'))
 )
