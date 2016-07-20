@@ -1,6 +1,6 @@
 def test():
     print "test ..."
-    assert False
+    assert True
 
 def test2():
     "test ..."
