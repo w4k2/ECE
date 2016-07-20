@@ -340,11 +340,7 @@ scores = dataset.score()
 				<span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">xrange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">dataset</span><span class="o">.</span><span class="n">classes</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
 				<span class="n">foo</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="n">operator</span><span class="o">.</span><span class="n">mul</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">pixel</span><span class="p">)</span>
 				<span class="n">u</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">pixel</span><span class="p">)</span>
-				<span class="k">print</span> <span class="n">a</span>
-				<span class="k">print</span> <span class="n">u</span>
-				<span class="k">print</span> <span class="n">pixel</span>
-				<span class="k">print</span> <span class="n">foo</span>
-				<span class="k">print</span> <span class="n">hue</span>
+				
 			<span class="n">saturation</span> <span class="o">=</span> <span class="mi">0</span>
 			<span class="k">if</span> <span class="n">cmax</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
 				<span class="n">saturation</span> <span class="o">=</span> <span class="n">delta</span> <span class="o">/</span> <span class="n">cmax</span>
