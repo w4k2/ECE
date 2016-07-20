@@ -19,5 +19,5 @@ setup(
     package_data={'': ['LICENSE']},
     scripts=['eec/eecExperiment',],
     license=license,
-    packages=find_packages(exclude=('docs','tests','README.md'))
+    packages=find_packages(exclude=('docs','tests','README.md','data'))
 )
