@@ -4,3 +4,4 @@ def test():
 
 def test2():
     "test ..."
+    assert True

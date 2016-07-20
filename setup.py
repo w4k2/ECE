@@ -2,7 +2,6 @@
 
 from setuptools import setup, find_packages
 
-
 with open('README.rst') as f:
     readme = f.read()
 
@@ -11,7 +10,7 @@ with open('LICENSE') as f:
 
 setup(
     name='eec',
-    version='0.2.5.1',
+    version='0.2.5.2',
     description='Exposer Ensemble Classifier',
     long_description=readme,
     author='Paweł Ksieniewicz',
