@@ -10,7 +10,7 @@ with open('LICENSE') as f:
 
 setup(
     name='eec',
-    version='0.2.5.4',
+    version='0.2.6',
     description='Exposer Ensemble Classifier',
     long_description=readme,
     author='Paweł Ksieniewicz',
