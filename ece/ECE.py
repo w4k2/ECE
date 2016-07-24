@@ -43,7 +43,7 @@ class ECE:
 	# ==== Preparing an ensemble
 	def __init__(self, dataset, configuration):
 		self.approach = configuration['eecApproach']
-		self.exposerParticipation = configuration['exposerParticipation']
+		self.exposerVotingMethod = configuration['exposerVotingMethod']
 		self.dimensions = configuration['dimensions']
 
 		self.dataset = dataset
