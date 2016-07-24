@@ -2,3 +2,4 @@ pypng
 enum
 pycco
 numpy
+coverage
