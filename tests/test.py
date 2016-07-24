@@ -47,7 +47,7 @@ def test_exposer():
 
 
 def test_ensemble():
-    """Do ensemble classify?"""
+    """How do ensemble classify according to participations?"""
     dataset = Dataset('data/iris.csv','iris')
     print "\n"
 
@@ -57,7 +57,7 @@ def test_ensemble():
         configuration = {
             'radius': .25, 
             'grain': 50, 
-            'limit': 3, 
+            'limit': 15, 
             'dimensions': [2],
             'eecApproach': ECEApproach.random,
             'exposerParticipation': participation
