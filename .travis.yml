@@ -5,6 +5,7 @@ python:
 install: "pip install -r requirements.txt"
 # command to run tests
 script: make test
+sudo: required
 notifications:
   email: false
   slack: w4k2:hi4RvyZzus4WXE7Ea5XufyBU
