@@ -1,6 +1,12 @@
 from ece import *
 from numpy import *
 
+def blue():
+    return "\033[92m"
+
+def endcolor():
+    return '\033[0m'
+
 def test_dataset():
     """Does dataset loads properly?"""
     dataset = Dataset('data/iris.csv','iris')
@@ -17,7 +23,7 @@ def test_dataset():
 
     # Proper resampling
     dataset = Dataset('data/iris.csv','iris', 50)
-    print dataset
+    print "%s%s%s" % (blue(), dataset, endcolor())
     assert len(dataset.samples) == 50
 
 def test_exposer():
@@ -36,7 +42,7 @@ def test_exposer():
     exposer.predict()
     scores = dataset.score()
 
-    print "\n\tACC = %.3f" % scores['accuracy']
+    print  "\n\t%sACC = %.3f%s" % (blue(), scores['accuracy'], endcolor())
     assert isnan(scores['accuracy']) == False
 
 
@@ -61,5 +67,5 @@ def test_ensemble():
         ensemble.predict()
         scores = dataset.score()
         
-        print "\tACC = %.3f : %s" % ( scores['accuracy'], participation )
+        print  "\t%sACC = %.3f%s" % (blue(), scores['accuracy'], endcolor())
         assert isnan(scores['accuracy']) == False
