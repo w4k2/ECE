@@ -12,7 +12,7 @@ test:
 	nosetests --verbosity=2 --with-coverage -x --with-xunit -cover-erase --cover-package=ece --nocapture
 	
 docset:
-	pycco eec/*.py
+	pycco ece/*.py
 	git subtree push --prefix docs origin gh-pages
 
 .PHONY: publish docset test
