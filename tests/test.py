@@ -17,6 +17,7 @@ def test_dataset():
 
     # Proper resampling
     dataset = Dataset('data/iris.csv','iris', 50)
+    print dataset
     assert len(dataset.samples) == 50
 
 def test_exposer():
