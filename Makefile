@@ -4,17 +4,15 @@ init:
 install:
 	python setup.py install
 
-publish: test docset
+publish: test
 	python setup.py sdist upload
-	git subtree push --prefix docs origin gh-pages
-	git add .
-	git commit -m "Publication"
-	git push
 
 test:
-	nosetests
+	clear
+	nosetests --verbosity=2 --with-coverage -x --with-xunit -cover-erase --cover-package=ece --nocapture
 	
 docset:
 	pycco eec/*.py
+	git subtree push --prefix docs origin gh-pages
 
 .PHONY: publish docset test

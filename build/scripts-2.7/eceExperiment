@@ -1,0 +1,149 @@
+#!/usr/local/opt/python/bin/python2.7
+import sys
+import json
+import time
+import csv
+import numpy as np
+from enum import Enum
+
+from ece import *
+
+configFilename = sys.argv[1]
+
+with open(configFilename) as data_file:    
+    data = json.load(data_file)
+
+datasets = data['datasets']
+
+title = data['title']
+description = data['description']
+models = data['models']
+
+subject = data['subject'][0].encode('ascii', 'ignore')
+subject_range = data['subject'][1]
+subject_range = np.arange(subject_range[0],subject_range[1],subject_range[2])
+resampling = data['resampling']
+
+print title
+print "\n" + description
+
+folds = xrange(0,5)
+
+# Preparing header
+header = "\n   "
+for model in models:
+	header += "\t%s\t   " % model["accronym"]
+header += "\n" + subject[0:3].upper()
+for model in models:
+	header += "\tACC\tBAC"
+header += "\n---"
+for model in models:
+	header += "\t---\t---"
+
+def process_model(subject,model,dataset):
+	if subject == "dimensions":
+		configuration = { subject: [step] }
+	else:
+		configuration = { subject: step }
+
+	configuration.update(model)
+	expar = configuration['exposerVotingMethod']
+
+	if expar == 1:
+		configuration.update({'exposerVotingMethod': ExposerVotingMethod.lone})
+	if expar == 2:
+		configuration.update({'exposerVotingMethod': ExposerVotingMethod.theta1})
+	if expar == 3:
+		configuration.update({'exposerVotingMethod': ExposerVotingMethod.theta2})
+	if expar == 4:
+		configuration.update({'exposerVotingMethod': ExposerVotingMethod.theta3})
+	if expar == 5:
+		configuration.update({'exposerVotingMethod': ExposerVotingMethod.thetas})
+
+	if model["type"] == "single":
+		exposer = Exposer(dataset, configuration)
+
+		dataset.clearSupports()
+		exposer.predict()
+
+	if model["type"] == "ensemble":
+		eceapp = configuration['eceApproach']
+		if eceapp == 1:
+			configuration.update({'eceApproach': ECEApproach.brutal})
+		if eceapp == 2:
+			configuration.update({'eceApproach': ECEApproach.random})
+		if eceapp == 3:
+			configuration.update({'eceApproach': ECEApproach.heuristic})
+
+		ece = ECE(dataset,configuration)
+		ece.predict()
+
+	score = dataset.score()
+	return score
+
+# Experiment loop
+for index, dbname in enumerate(datasets):
+	start = time.time()
+
+	summary = []
+
+	for fold in folds:
+		dataset = Dataset('data/%s.csv' % dbname, dbname, resampling)
+		dataset.setCV(fold)
+		summary.append([])
+
+		print "\n| %s, fold %i" % (dataset, fold)
+		print header
+
+		for step in subject_range:
+			scores = []
+
+			# Single model processing
+			for model in models:
+				scores += [process_model(subject,model,dataset)]
+			
+			summary[fold].append(scores)
+
+			row = "%s" % str(step)
+			for score in scores:
+				pass
+				row += "\t%02.0f%%\t%02.0f%%" % (\
+					score['accuracy'] * 100, \
+					score['bac'] * 100)
+
+			print row
+
+	end = time.time()
+
+	print "\n%.3f seconds" % (end - start)
+
+	print "\n# GENERATING SUMMARY"
+
+	filename = "results/%s_%s.csv" % (configFilename.split('.')[0], dbname)
+
+	textFile = open(filename, "w")
+
+	for index, step in enumerate(subject_range):
+		accumulator = []
+		for fold in folds:
+			accumulator.append(summary[fold][index])
+
+		row = "%.3f" % step
+
+		for index, model in enumerate(models):
+			model_accumulator = []
+			for fold in folds:
+				model_accumulator.append(accumulator[fold][index])
+
+			accuracy = sum(e['accuracy'] for e in model_accumulator) / len(model_accumulator)
+			bac = sum(e['bac'] for e in model_accumulator) / len(model_accumulator)
+			sensitivity = sum(e['sensitivity'] for e in model_accumulator) / len(model_accumulator)
+			specificity = sum(e['specificity'] for e in model_accumulator) / len(model_accumulator)
+			ppv = sum(e['ppv'] for e in model_accumulator) / len(model_accumulator)
+			npv = sum(e['npv'] for e in model_accumulator) / len(model_accumulator)
+
+			row += ", %.3f, %.3f, %.3f, %.3f, %.3f, %.3f" % (accuracy, bac, sensitivity, specificity, ppv, npv)
+
+		textFile.write(row + "\n")
+
+	textFile.close()

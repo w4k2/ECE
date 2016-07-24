@@ -1,5 +1,5 @@
 """
-**EEC** is an Exposer Ensemble Classifier.
+**ECE** is an Exposer Ensemble Classifier.
 
 ### Usage
 
@@ -33,17 +33,17 @@ SEED = 123
 random.seed(SEED)
 
 # === EEC Approach ===
-class EECApproach(Enum):
+class ECEApproach(Enum):
 	brutal = 1
 	random = 2
 	heuristic = 3
 
 # === Exposer Ensemble Classifier
-class EEC:
+class ECE:
 	# ==== Preparing an ensemble
 	def __init__(self, dataset, configuration):
-		self.approach = configuration['eecApproach']
-		self.exposerParticipation = configuration['exposerParticipation']
+		self.approach = configuration['eceApproach']
+		self.exposerVotingMethod = configuration['exposerVotingMethod']
 		self.dimensions = configuration['dimensions']
 
 		self.dataset = dataset
@@ -57,13 +57,13 @@ class EEC:
 			self.combinations += list(combinations)
 
 		# ===== Random approach		
-		if self.approach == EECApproach.random:
+		if self.approach == ECEApproach.random:
 			limit = self.configuration['limit']
 			random.shuffle(self.combinations)
 			self.combinations = self.combinations[0:limit]
 
 		# ===== Heuristic approach
-		if self.approach == EECApproach.heuristic:
+		if self.approach == ECEApproach.heuristic:
 			limit = self.configuration['limit']
 			pool = self.configuration['pool']
 			random.shuffle(self.combinations)
