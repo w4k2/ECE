@@ -47,15 +47,18 @@ def process_model(subject,model,dataset):
 		configuration = { subject: step }
 
 	configuration.update(model)
-	expar = configuration['exposerParticipation']
+	expar = configuration['exposerVotingMethod']
 
 	if expar == 1:
-		configuration.update({'exposerParticipation': ExposerParticipation.lone})
+		configuration.update({'exposerVotingMethod': ExposerVotingMethod.lone})
 	if expar == 2:
-		configuration.update({'exposerParticipation': ExposerParticipation.theta1})
+		configuration.update({'exposerVotingMethod': ExposerVotingMethod.theta1})
 	if expar == 3:
-		configuration.update({'exposerParticipation': ExposerParticipation.theta2})
-
+		configuration.update({'exposerVotingMethod': ExposerVotingMethod.theta2})
+	if expar == 4:
+		configuration.update({'exposerVotingMethod': ExposerVotingMethod.theta3})
+	if expar == 5:
+		configuration.update({'exposerVotingMethod': ExposerVotingMethod.thetas})
 
 	if model["type"] == "single":
 		exposer = Exposer(dataset, configuration)
@@ -64,16 +67,16 @@ def process_model(subject,model,dataset):
 		exposer.predict()
 
 	if model["type"] == "ensemble":
-		eecapp = configuration['eecApproach']
-		if eecapp == 1:
-			configuration.update({'eecApproach': EECApproach.brutal})
-		if eecapp == 2:
-			configuration.update({'eecApproach': EECApproach.random})
-		if eecapp == 3:
-			configuration.update({'eecApproach': EECApproach.heuristic})
+		eceapp = configuration['eceApproach']
+		if eceapp == 1:
+			configuration.update({'eceApproach': ECEApproach.brutal})
+		if eceapp == 2:
+			configuration.update({'eceApproach': ECEApproach.random})
+		if eceapp == 3:
+			configuration.update({'eceApproach': ECEApproach.heuristic})
 
-		eec = EEC(dataset,configuration)
-		eec.predict()
+		ece = ECE(dataset,configuration)
+		ece.predict()
 
 	score = dataset.score()
 	return score

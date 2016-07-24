@@ -9,7 +9,6 @@ publish: test
 
 test:
 	clear
-
 	nosetests --verbosity=2 --with-coverage -x --with-xunit -cover-erase --cover-package=ece --nocapture
 	
 docset:

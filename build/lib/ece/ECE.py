@@ -42,8 +42,8 @@ class ECEApproach(Enum):
 class ECE:
 	# ==== Preparing an ensemble
 	def __init__(self, dataset, configuration):
-		self.approach = configuration['eecApproach']
-		self.exposerParticipation = configuration['exposerParticipation']
+		self.approach = configuration['eceApproach']
+		self.exposerVotingMethod = configuration['exposerVotingMethod']
 		self.dimensions = configuration['dimensions']
 
 		self.dataset = dataset
@@ -57,13 +57,13 @@ class ECE:
 			self.combinations += list(combinations)
 
 		# ===== Random approach		
-		if self.approach == EECApproach.random:
+		if self.approach == ECEApproach.random:
 			limit = self.configuration['limit']
 			random.shuffle(self.combinations)
 			self.combinations = self.combinations[0:limit]
 
 		# ===== Heuristic approach
-		if self.approach == EECApproach.heuristic:
+		if self.approach == ECEApproach.heuristic:
 			limit = self.configuration['limit']
 			pool = self.configuration['pool']
 			random.shuffle(self.combinations)

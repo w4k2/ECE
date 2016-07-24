@@ -61,7 +61,7 @@ def test_ensemble():
                 'grain': 3, 
                 'limit': 20, 
                 'dimensions': [2],
-                'eecApproach': ECEApproach.random,
+                'eceApproach': ECEApproach.random,
                 'exposerVotingMethod': votingMethod
             }
             ensemble = ECE(dataset,configuration)
