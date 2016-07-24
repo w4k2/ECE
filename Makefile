@@ -8,7 +8,7 @@ publish: test
 	python setup.py sdist upload
 
 test:
-	nosetests -v --nocapture
+	nosetests --verbosity=2 --with-coverage -x --with-xunit -cover-erase --cover-package=ece
 	
 docset:
 	pycco eec/*.py

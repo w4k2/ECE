@@ -2,7 +2,7 @@ from ece import *
 from numpy import *
 
 def test_dataset():
-	# "Properly loading dataset"
+    """Does dataset loads properly?"""
     dataset = Dataset('data/iris.csv','iris')
 
 	# Amount of classes, samples and features
@@ -20,6 +20,7 @@ def test_dataset():
     assert len(dataset.samples) == 50
 
 def test_exposer():
+    """Do exposer classify?"""
     dataset = Dataset('data/iris.csv','iris')
     dataset.setCV(0)
 
