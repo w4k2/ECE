@@ -34,5 +34,31 @@ def test_exposer():
     dataset.clearSupports()
     exposer.predict()
     scores = dataset.score()
-    print scores['accuracy']
+
+    print "\n\tACC = %.3f" % scores['accuracy']
     assert isnan(scores['accuracy']) == False
+
+
+def test_ensemble():
+    """Do ensemble classify?"""
+    dataset = Dataset('data/iris.csv','iris')
+    print "\n"
+
+    participations = [ExposerParticipation.lone, ExposerParticipation.theta1, ExposerParticipation.theta2]
+    for participation in participations:
+        dataset.setCV(0)
+        configuration = {
+            'radius': .25, 
+            'grain': 50, 
+            'limit': 3, 
+            'dimensions': [2],
+            'eecApproach': ECEApproach.random,
+            'exposerParticipation': participation
+        }
+        ensemble = ECE(dataset,configuration)
+    
+        ensemble.predict()
+        scores = dataset.score()
+        
+        print "\tACC = %.3f : %s" % ( scores['accuracy'], participation )
+        assert isnan(scores['accuracy']) == False

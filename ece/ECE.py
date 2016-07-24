@@ -57,13 +57,13 @@ class ECE:
 			self.combinations += list(combinations)
 
 		# ===== Random approach		
-		if self.approach == EECApproach.random:
+		if self.approach == ECEApproach.random:
 			limit = self.configuration['limit']
 			random.shuffle(self.combinations)
 			self.combinations = self.combinations[0:limit]
 
 		# ===== Heuristic approach
-		if self.approach == EECApproach.heuristic:
+		if self.approach == ECEApproach.heuristic:
 			limit = self.configuration['limit']
 			pool = self.configuration['pool']
 			random.shuffle(self.combinations)
