@@ -8,7 +8,7 @@ publish: test
 	python setup.py sdist upload
 
 test:
-	nosetests
+	nosetests -v --nocapture
 	
 docset:
 	pycco eec/*.py

@@ -1,4 +1,5 @@
-from eec import *
+from ece import *
+from numpy import *
 
 def test_dataset():
 	# "Properly loading dataset"
@@ -17,3 +18,20 @@ def test_dataset():
     # Proper resampling
     dataset = Dataset('data/iris.csv','iris', 50)
     assert len(dataset.samples) == 50
+
+def test_exposer():
+    dataset = Dataset('data/iris.csv','iris')
+    dataset.setCV(0)
+
+    configuration = {
+        'radius': .25, 
+        'grain': 50,
+        'exposerParticipation': ExposerParticipation.lone,
+        'chosenLambda': [2, 3]
+    }
+    exposer = Exposer(dataset, configuration)
+    dataset.clearSupports()
+    exposer.predict()
+    scores = dataset.score()
+    print scores['accuracy']
+    assert isnan(scores['accuracy']) == False

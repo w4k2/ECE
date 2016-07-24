@@ -6,11 +6,7 @@ import csv
 import numpy as np
 from enum import Enum
 
-from eec import Dataset
-from eec import Exposer
-from eec import ExposerParticipation
-from eec import EEC
-from eec import EECApproach
+from ece import *
 
 configFilename = sys.argv[1]
 
