@@ -14,7 +14,7 @@ To create an ensemble, all you need is to load a dataset, prepare dictionary wit
 		'eecApproach': ECEApproach.random,
 		'exposerVotingMethod': ExposerVotingMethod.lone
 	}
-	ensemble = EEC(dataset,configuration)
+	ensemble = ECE(dataset,configuration)
 
 For a process of classification you can simply use ensemble to create predictions. Dictionary with scores is provided by a function `score()` being a member of `dataset` object.
 

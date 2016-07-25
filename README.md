@@ -12,7 +12,6 @@ To create an _exposer_, all you need is to load a dataset, prepare dictionary wi
     configuration = {
         'radius': .5, 
         'grain': 15,
-        'exposerParticipation': ExposerParticipation.lone,
         'chosenLambda': [2, 3]
     }
     exposer = Exposer(dataset, configuration)
@@ -42,3 +41,19 @@ For a process of classification you can simply use ensemble to create prediction
 
     ensemble.predict()
     scores = dataset.score()
+
+## Models
+
+### `ExposerVotingMethod`
+
+- lone
+- theta1
+- theta2
+- theta3
+- thetas
+
+### `ECEApproach`
+
+- brutal = 1
+- random = 2
+- heuristic = 3

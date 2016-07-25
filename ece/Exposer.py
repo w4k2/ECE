@@ -9,7 +9,6 @@ To create an _exposer_, all you need is to load a dataset, prepare dictionary wi
 	configuration = {
 		'radius': .5, 
 		'grain': 15,
-		'exposerParticipation': ExposerParticipation.lone,
 		'chosenLambda': [2, 3]
 	}
 	exposer = Exposer(dataset, configuration)
