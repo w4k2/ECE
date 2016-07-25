@@ -26,10 +26,10 @@ configuration = {
     'grain': grain, 
     'limit': limit, 
     'dimensions': dimensions,
-    'eecApproach': EECApproach.random,
-    'exposerParticipation': ExposerParticipation.lone
+    'eecApproach': ECEApproach.random,
+    'exposerVotingMethod': ExposerVotingMethod.lone
 }
-ensemble = EEC(dataset,configuration)
+ensemble = ECE(dataset,configuration)
 </code></pre>
 <p>For a process of classification you can simply use ensemble to create predictions. Dictionary with scores is provided by a function <code>score()</code> being a member of <code>dataset</code> object.</p>
 <pre><code>ensemble.predict()
@@ -42,10 +42,7 @@ scores = dataset.score()
 <span class="kn">from</span> <span class="nn">Exposer</span> <span class="kn">import</span> <span class="o">*</span>
 
 <span class="kn">import</span> <span class="nn">itertools</span>
-<span class="kn">import</span> <span class="nn">random</span>
-
-<span class="n">SEED</span> <span class="o">=</span> <span class="mi">123</span>
-<span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">SEED</span><span class="p">)</span></pre></div>
+<span class="kn">import</span> <span class="nn">random</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -54,13 +51,11 @@ scores = dataset.score()
       <div class='octowrap'>
         <a class='octothorpe' href='#section-1'>#</a>
       </div>
-      <h3><span id="eec-approach" href="eec-approach"> EEC Approach </span></h3>
+      <p>To ensure deterministic loop we use randomization with fixed seed.</p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre><span class="k">class</span> <span class="nc">ECEApproach</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
-	<span class="n">brutal</span> <span class="o">=</span> <span class="mi">1</span>
-	<span class="n">random</span> <span class="o">=</span> <span class="mi">2</span>
-	<span class="n">heuristic</span> <span class="o">=</span> <span class="mi">3</span></pre></div>
+      <div class="highlight"><pre><span class="n">SEED</span> <span class="o">=</span> <span class="mi">123</span>
+<span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">SEED</span><span class="p">)</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
@@ -68,6 +63,55 @@ scores = dataset.score()
     <div class='docs'>
       <div class='octowrap'>
         <a class='octothorpe' href='#section-2'>#</a>
+      </div>
+      <h3>ECE Approach</h3>
+<p>There are three approaches possible to build an ensemble.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre><span class="k">class</span> <span class="nc">ECEApproach</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-3'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-3'>#</a>
+      </div>
+      <p>With <strong>brutal approach</strong> we use all possible combinations for given dimensionalities.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>	<span class="n">brutal</span> <span class="o">=</span> <span class="mi">1</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-4'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-4'>#</a>
+      </div>
+      <p>An <strong>random approach</strong> uses a set of randomly chosen <em>exposers</em> in a number given by the <code>limit</code> parameter.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>	<span class="n">random</span> <span class="o">=</span> <span class="mi">2</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-5'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-5'>#</a>
+      </div>
+      <p>Finally, the <strong>heuristic approach</strong> uses set of exposers in a number given by the <code>limit</code> parameter with highest <code>theta</code> value from pre-generated pool.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>	<span class="n">heuristic</span> <span class="o">=</span> <span class="mi">3</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-6'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-6'>#</a>
       </div>
       <h3><span id="exposer-ensemble-classifier" href="exposer-ensemble-classifier"> Exposer Ensemble Classifier</h3>
 <p></span></p>
@@ -77,35 +121,62 @@ scores = dataset.score()
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-3'>
+  <div class='section' id='section-7'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-3'>#</a>
+        <a class='octothorpe' href='#section-7'>#</a>
       </div>
       <h4><span id="preparing-an-ensemble" href="preparing-an-ensemble"> Preparing an ensemble</h4>
 <p></span></p>
     </div>
     <div class='code'>
-      <div class="highlight"><pre>	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">configuration</span><span class="p">):</span>
-		<span class="bp">self</span><span class="o">.</span><span class="n">approach</span> <span class="o">=</span> <span class="n">configuration</span><span class="p">[</span><span class="s1">&#39;eceApproach&#39;</span><span class="p">]</span>
+      <div class="highlight"><pre>	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">configuration</span><span class="p">):</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-8'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-8'>#</a>
+      </div>
+      <p>First, we're collecting four values from passed configuration:</p>
+<ul>
+<li><strong>approach</strong>, described above,</li>
+<li><strong>voting method</strong>, described in <em><a href="Exposer.html">Exposer</a></em> class,</li>
+<li><strong>dimensions</strong>, used as a vector of possible exposer dimensionalities.</li>
+<li><strong>configuration</strong>, used to configure <em>exposers</em>.</li>
+</ul>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>		<span class="bp">self</span><span class="o">.</span><span class="n">approach</span> <span class="o">=</span> <span class="n">configuration</span><span class="p">[</span><span class="s1">&#39;eceApproach&#39;</span><span class="p">]</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">exposerVotingMethod</span> <span class="o">=</span> <span class="n">ExposerVotingMethod</span><span class="o">.</span><span class="n">lone</span>
 		<span class="k">if</span> <span class="s1">&#39;exposerVotingMethod&#39;</span> <span class="ow">in</span> <span class="n">configuration</span><span class="p">:</span>
 			<span class="bp">self</span><span class="o">.</span><span class="n">exposerVotingMethod</span> <span class="o">=</span> <span class="n">configuration</span><span class="p">[</span><span class="s1">&#39;exposerVotingMethod&#39;</span><span class="p">]</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">dimensions</span> <span class="o">=</span> <span class="n">configuration</span><span class="p">[</span><span class="s1">&#39;dimensions&#39;</span><span class="p">]</span>
-
-		<span class="bp">self</span><span class="o">.</span><span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span>
-		<span class="bp">self</span><span class="o">.</span><span class="n">configuration</span> <span class="o">=</span> <span class="n">configuration</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">configuration</span> <span class="o">=</span> <span class="n">configuration</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-9'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-9'>#</a>
+      </div>
+      <p>Later, we're gathering the dataset and creating empty list of lambdas.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>		<span class="bp">self</span><span class="o">.</span><span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span>
 		<span class="bp">self</span><span class="o">.</span><span class="n">combinations</span> <span class="o">=</span> <span class="p">[]</span></pre></div>
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-4'>
+  <div class='section' id='section-10'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-4'>#</a>
+        <a class='octothorpe' href='#section-10'>#</a>
       </div>
-      <h5><span id="brutal-approach" href="brutal-approach"> Brutal approach</h5>
-<p></span></p>
+      <h5>Brutal approach</h5>
+<p>For every dimensionality from <code>dimensions</code> list we're creating a list of all possible combinations and appending them to the combinations list.</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre>		<span class="k">for</span> <span class="n">dimension</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dimensions</span><span class="p">:</span>
@@ -115,13 +186,13 @@ scores = dataset.score()
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-5'>
+  <div class='section' id='section-11'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-5'>#</a>
+        <a class='octothorpe' href='#section-11'>#</a>
       </div>
-      <h5><span id="random-approach" href="random-approach"> Random approach</h5>
-<p></span></p>
+      <h5>Random approach</h5>
+<p>If the random approach is chosen, a list of combinations is limited to a random subset in a number given by <code>limit</code> parameter.</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre>		<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">approach</span> <span class="o">==</span> <span class="n">ECEApproach</span><span class="o">.</span><span class="n">random</span><span class="p">:</span>
@@ -131,22 +202,34 @@ scores = dataset.score()
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-6'>
+  <div class='section' id='section-12'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-6'>#</a>
+        <a class='octothorpe' href='#section-12'>#</a>
       </div>
-      <h5><span id="heuristic-approach" href="heuristic-approach"> Heuristic approach</h5>
-<p></span></p>
+      <h5>Heuristic approach</h5>
+<p>For the heuristic approach is chosen, a list of combinations is limited to a random subset in a number given by the <code>limit</code> parameter, established as pool.</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre>		<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">approach</span> <span class="o">==</span> <span class="n">ECEApproach</span><span class="o">.</span><span class="n">heuristic</span><span class="p">:</span>
+
 			<span class="n">limit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">configuration</span><span class="p">[</span><span class="s1">&#39;limit&#39;</span><span class="p">]</span>
 			<span class="n">pool</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">configuration</span><span class="p">[</span><span class="s1">&#39;pool&#39;</span><span class="p">]</span>
 			<span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">combinations</span><span class="p">)</span>
 			<span class="bp">self</span><span class="o">.</span><span class="n">combinations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">combinations</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">pool</span><span class="p">]</span>
-			<span class="n">e_pool</span> <span class="o">=</span> <span class="p">[]</span>
-			<span class="k">for</span> <span class="n">combination</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">combinations</span><span class="p">:</span>
+			<span class="n">e_pool</span> <span class="o">=</span> <span class="p">[]</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-13'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-13'>#</a>
+      </div>
+      <p>Later, for every combination in pool, we create an exposer with grain <code>4</code> and radius <code>1</code>.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>			<span class="k">for</span> <span class="n">combination</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">combinations</span><span class="p">:</span>
 				<span class="n">configuration</span> <span class="o">=</span> <span class="p">{</span>
 					<span class="s1">&#39;grain&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
 					<span class="s1">&#39;radius&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
@@ -156,8 +239,19 @@ scores = dataset.score()
 				<span class="n">e_pool</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Exposer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="p">,</span><span class="n">configuration</span><span class="p">))</span>
 
 			<span class="bp">self</span><span class="o">.</span><span class="n">combinations</span> <span class="o">=</span> <span class="p">[]</span>
-			<span class="n">i_pool</span> <span class="o">=</span> <span class="p">[]</span>
-			<span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">classes</span><span class="p">):</span>
+			<span class="n">i_pool</span> <span class="o">=</span> <span class="p">[]</span></pre></div>
+    </div>
+  </div>
+  <div class='clearall'></div>
+  <div class='section' id='section-14'>
+    <div class='docs'>
+      <div class='octowrap'>
+        <a class='octothorpe' href='#section-14'>#</a>
+      </div>
+      <p>And a limited subset of pool members with highest theta is appended to the list of combinations.</p>
+    </div>
+    <div class='code'>
+      <div class="highlight"><pre>			<span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">classes</span><span class="p">):</span>
 				<span class="n">n_pool</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">e_pool</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">exposer</span><span class="p">:</span> <span class="n">exposer</span><span class="o">.</span><span class="n">thetas</span><span class="p">[</span><span class="n">label</span><span class="p">],</span> <span class="n">reverse</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 				<span class="n">n_pool</span> <span class="o">=</span> <span class="n">n_pool</span><span class="p">[</span><span class="mi">0</span><span class="p">:(</span><span class="n">limit</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">classes</span><span class="p">)]</span>
 				<span class="k">for</span> <span class="n">exposer</span> <span class="ow">in</span> <span class="n">n_pool</span><span class="p">:</span>
@@ -165,13 +259,13 @@ scores = dataset.score()
     </div>
   </div>
   <div class='clearall'></div>
-  <div class='section' id='section-7'>
+  <div class='section' id='section-15'>
     <div class='docs'>
       <div class='octowrap'>
-        <a class='octothorpe' href='#section-7'>#</a>
+        <a class='octothorpe' href='#section-15'>#</a>
       </div>
-      <h3><span id="prediction" href="prediction"> Prediction</h3>
-<p></span></p>
+      <h3>Prediction</h3>
+<p>Prediction in this case is just creating and configuring exposer for every combination from a list and performing the prediction for every member.</p>
     </div>
     <div class='code'>
       <div class="highlight"><pre>	<span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
