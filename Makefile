@@ -9,10 +9,12 @@ publish: test
 
 test:
 	clear
+#	nosetests --verbosity=2 --nocapture
 	nosetests --verbosity=2 --with-coverage -x --with-xunit -cover-erase --cover-package=ece --nocapture
 	
 docset:
 	pycco ece/*.py
+	rm docs/__init__.html
 	git subtree push --prefix docs origin gh-pages
 
 .PHONY: publish docset test

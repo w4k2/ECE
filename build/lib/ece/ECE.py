@@ -73,7 +73,7 @@ class ECE:
 				configuration = {
 					'grain': 4,
 					'radius': 1,
-					'exposerParticipation': ExposerParticipation.lone,
+					'exposerVotingMethod': ExposerVotingMethod.lone,
 					'chosenLambda': list(combination)
 				}
 				e_pool.append(Exposer(self.dataset,configuration))
