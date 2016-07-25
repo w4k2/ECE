@@ -11,8 +11,8 @@ To create an ensemble, all you need is to load a dataset, prepare dictionary wit
 		'grain': grain, 
 		'limit': limit, 
 		'dimensions': dimensions,
-		'eecApproach': EECApproach.random,
-		'exposerParticipation': ExposerParticipation.lone
+		'eecApproach': ECEApproach.random,
+		'exposerVotingMethod': ExposerVotingMethod.lone
 	}
 	ensemble = EEC(dataset,configuration)
 
