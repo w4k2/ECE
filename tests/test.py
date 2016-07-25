@@ -34,7 +34,6 @@ def test_exposer():
     configuration = {
         'radius': .25, 
         'grain': 20,
-        'exposerVotingMethod': ExposerVotingMethod.lone,
         'chosenLambda': [2, 4]
     }
     exposer = Exposer(dataset, configuration)
@@ -52,13 +51,13 @@ def test_ensemble():
     print "\n"
 
     votingMethods = [ExposerVotingMethod.lone, ExposerVotingMethod.theta1, ExposerVotingMethod.theta2, ExposerVotingMethod.theta3, ExposerVotingMethod.thetas]
-    for fold in xrange(0,5):
+    for fold in xrange(0,4):
         print "Fold %i" % fold
         for votingMethod in votingMethods:
             dataset.setCV(fold)
             configuration = {
-                'radius': 1, 
-                'grain': 3, 
+                'radius': .2, 
+                'grain': 10, 
                 'limit': 20, 
                 'dimensions': [2],
                 'eceApproach': ECEApproach.random,
@@ -69,5 +68,5 @@ def test_ensemble():
             ensemble.predict()
             scores = dataset.score()
             
-            print  "\t%sACC = %.3f : %s%s" % (blue(), scores['accuracy'], votingMethod, endcolor())
+            print  "\t%sACC = %.3f%s" % (blue(), scores['accuracy'], endcolor())
             assert isnan(scores['accuracy']) == False

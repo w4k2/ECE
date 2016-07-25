@@ -43,7 +43,9 @@ class ECE:
 	# ==== Preparing an ensemble
 	def __init__(self, dataset, configuration):
 		self.approach = configuration['eceApproach']
-		self.exposerVotingMethod = configuration['exposerVotingMethod']
+		self.exposerVotingMethod = ExposerVotingMethod.lone
+		if 'exposerVotingMethod' in configuration:
+			self.exposerVotingMethod = configuration['exposerVotingMethod']
 		self.dimensions = configuration['dimensions']
 
 		self.dataset = dataset
@@ -82,13 +84,10 @@ class ECE:
 			i_pool = []
 			for label in xrange(0,self.dataset.classes):
 				n_pool = sorted(e_pool, key=lambda exposer: exposer.thetas[label], reverse=True)
-
 				n_pool = n_pool[0:(limit/self.dataset.classes)]
-
 				for exposer in n_pool:
 					self.combinations.append((exposer.chosenLambda))
 				
-
 	# === Prediction
 	def predict(self):
 		self.dataset.clearSupports()
