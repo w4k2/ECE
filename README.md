@@ -54,6 +54,6 @@ For a process of classification you can simply use ensemble to create prediction
 
 ### `ECEApproach`
 
-- brutal = 1
-- random = 2
-- heuristic = 3
+- brutal
+- random
+- heuristic

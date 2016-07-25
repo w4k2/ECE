@@ -29,48 +29,68 @@ from Exposer import *
 import itertools
 import random
 
+# To ensure deterministic loop we use randomization with fixed seed.
 SEED = 123
 random.seed(SEED)
 
-# === EEC Approach ===
+# ### ECE Approach
+# There are three approaches possible to build an ensemble.
 class ECEApproach(Enum):
+# With **brutal approach** we use all possible combinations for given dimensionalities.
 	brutal = 1
+# An **random approach** uses a set of randomly chosen _exposers_ in a number given by the `limit` parameter.
 	random = 2
+# Finally, the **heuristic approach** uses set of exposers in a number given by the `limit` parameter with highest `theta` value from pre-generated pool.
 	heuristic = 3
 
 # === Exposer Ensemble Classifier
 class ECE:
 	# ==== Preparing an ensemble
 	def __init__(self, dataset, configuration):
+		# First, we're collecting four values from passed configuration:
+		#
+		#- **approach**, described above,
+		#- **voting method**, described in _[Exposer](Exposer.html)_ class,
+		#- **dimensions**, used as a vector of possible exposer dimensionalities.
+		#- **configuration**, used to configure _exposers_.
+
 		self.approach = configuration['eceApproach']
 		self.exposerVotingMethod = ExposerVotingMethod.lone
 		if 'exposerVotingMethod' in configuration:
 			self.exposerVotingMethod = configuration['exposerVotingMethod']
 		self.dimensions = configuration['dimensions']
-
-		self.dataset = dataset
 		self.configuration = configuration
+
+		# Later, we're gathering the dataset and creating empty list of lambdas.
+		self.dataset = dataset
 		self.combinations = []
 
-		# ===== Brutal approach
+		# ##### Brutal approach
+		# For every dimensionality from `dimensions` list we're creating a list of all possible combinations and appending them to the combinations list.
+
 		for dimension in self.dimensions:
 			given_range = range(0, dataset.features)
 			combinations = itertools.combinations(given_range, dimension)
 			self.combinations += list(combinations)
 
-		# ===== Random approach		
+		# ##### Random approach
+		# If the random approach is chosen, a list of combinations is limited to a random subset in a number given by `limit` parameter.
 		if self.approach == ECEApproach.random:
 			limit = self.configuration['limit']
 			random.shuffle(self.combinations)
 			self.combinations = self.combinations[0:limit]
 
-		# ===== Heuristic approach
+		# ##### Heuristic approach
+		# For the heuristic approach is chosen, a list of combinations is limited to a random subset in a number given by the `limit` parameter, established as pool.
 		if self.approach == ECEApproach.heuristic:
+
 			limit = self.configuration['limit']
 			pool = self.configuration['pool']
 			random.shuffle(self.combinations)
 			self.combinations = self.combinations[0:pool]
 			e_pool = []
+
+			# Later, for every combination in pool, we create an exposer with grain `4` and radius `1`.
 			for combination in self.combinations:
 				configuration = {
 					'grain': 4,
@@ -82,13 +102,15 @@ class ECE:
 
 			self.combinations = []
 			i_pool = []
+			# And a limited subset of pool members with highest theta is appended to the list of combinations.
 			for label in xrange(0,self.dataset.classes):
 				n_pool = sorted(e_pool, key=lambda exposer: exposer.thetas[label], reverse=True)
 				n_pool = n_pool[0:(limit/self.dataset.classes)]
 				for exposer in n_pool:
 					self.combinations.append((exposer.chosenLambda))
 				
-	# === Prediction
+	# ### Prediction
+	# Prediction in this case is just creating and configuring exposer for every combination from a list and performing the prediction for every member.
 	def predict(self):
 		self.dataset.clearSupports()
 		for combination in self.combinations:
