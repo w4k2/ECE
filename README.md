@@ -22,7 +22,7 @@ For a process of classification, first is it required to clear supports for all 
     exposer.predict()
     scores = dataset.score()
 
-### ECE
+### Ensemble of Exposers [ECE]
 
 To create an ensemble, all you need is to load a dataset, prepare dictionary with demanded configuration and use them to initiate object.
 
