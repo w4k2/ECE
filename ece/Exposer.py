@@ -191,7 +191,7 @@ class Exposer(object):
 			if self.exposerVotingMethod == ExposerVotingMethod.theta2:
 				givenSupport = map(operator.mul, self.thetas, support)
 
-			# When we use **theta3**, a product multiplies ensemble support and a vector measure `thetas`.
+			# When we use **theta3**, a product multiplies ensemble support and both a vector and a scalar `theta` measures.
 			if self.exposerVotingMethod == ExposerVotingMethod.theta3:
 				givenSupport = self.theta * np.array(map(operator.mul, self.thetas, support))
 
@@ -199,7 +199,6 @@ class Exposer(object):
 			if self.exposerVotingMethod == ExposerVotingMethod.thetas:
 				saturation = self.hsv[position][1]
 				givenSupport = saturation * self.theta * np.array(map(operator.mul, self.thetas, support))
-
 
 			# Finally, we demand on `sample` to establish a prediction, according to its accumulated support vector.
 			sample.support += givenSupport
