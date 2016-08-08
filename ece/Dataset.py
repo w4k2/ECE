@@ -2,6 +2,7 @@ from Sample import *
 import csv
 import numpy as np
 import random
+import re
 
 np.seterr(divide='ignore', invalid='ignore')
 
@@ -11,15 +12,17 @@ random.seed(SEED)
   	
 # DATASET
 class Dataset:
-	def __init__(self, filename, dbname, resample = 0):
+	def __init__(self, filename, resample = 0):
 		# Load db
-		self.dbname = dbname
+		wisepath = re.findall(r"[\w']+", filename)
+		self.dbname = wisepath[len(wisepath)-2]
 		self.source_samples = []
 	  	self.classes = 0
 	  	self.test = []
 		with open(filename, 'rb') as file:
 			csvDataset = csv.reader(file, delimiter=',')
 			for row in csvDataset:
+				#print row
 				self.source_samples.append(Sample(row))
 
 		# normalize

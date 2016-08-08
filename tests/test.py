@@ -9,7 +9,7 @@ def endcolor():
 
 def test_dataset():
     """Does dataset loads properly?"""
-    dataset = Dataset('data/iris.csv','iris')
+    dataset = Dataset('data/iris.csv')
 
 	# Amount of classes, samples and features
     assert dataset.classes == 3
@@ -22,9 +22,28 @@ def test_dataset():
     		assert value >= 0 and value <= 1
 
     # Proper resampling
-    dataset = Dataset('data/iris.csv','iris', 50)
+    dataset = Dataset('data/iris.csv', 50)
     print "%s%s%s" % (blue(), dataset, endcolor())
     assert len(dataset.samples) == 50
+
+def test_missing_dataset():
+    """Does dataset loads properly?"""
+    dataset = Dataset('data/hyper.csv','hyper')
+
+    # Amount of classes, samples and features
+#    assert dataset.classes == 3
+#    assert len(dataset.samples) == 150
+#    assert dataset.features == 4
+
+    # Proper normalization
+#    for sample in dataset.samples:
+#        for value in sample.features:
+#            assert value >= 0 and value <= 1
+
+    # Proper resampling
+#    dataset = Dataset('data/iris.csv','iris', 50)
+#    print "%s%s%s" % (blue(), dataset, endcolor())
+#    assert len(dataset.samples) == 50
 
 def test_exposer():
     """Do exposer classify?"""
