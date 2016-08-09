@@ -24,14 +24,10 @@ For a process of classification you can simply use ensemble to create prediction
 """
 from Sample import *
 from Dataset import *
+from Ensemble import *
 from Exposer import *
 
 import itertools
-import random
-
-# To ensure deterministic loop we use randomization with fixed seed.
-SEED = 123
-random.seed(SEED)
 
 # ### ECE Approach
 # There are three approaches possible to build an ensemble.
@@ -44,9 +40,10 @@ class ECEApproach(Enum):
 	heuristic = 3
 
 # === Exposer Classifier Ensemble
-class ECE:
+class ECE(Ensemble):
 	# ==== Preparing an ensemble
 	def __init__(self, dataset, configuration):
+		Ensemble.__init__(self,dataset)
 		# First, we're collecting four values from passed configuration:
 		#
 		#- **approach**, described above,
@@ -60,14 +57,13 @@ class ECE:
 			self.exposerVotingMethod = configuration['exposerVotingMethod']
 		self.dimensions = configuration['dimensions']
 		self.configuration = configuration
+		self.exposers = []
 
 		# Later, we're gathering the dataset and creating empty list of lambdas.
-		self.dataset = dataset
 		self.combinations = []
 
 		# ##### Brutal approach
 		# For every dimensionality from `dimensions` list we're creating a list of all possible combinations and appending them to the combinations list.
-
 		for dimension in self.dimensions:
 			given_range = range(0, dataset.features)
 			combinations = itertools.combinations(given_range, dimension)
@@ -100,22 +96,33 @@ class ECE:
 				}
 				e_pool.append(Exposer(self.dataset,configuration))
 
+			for exposer in e_pool:
+				exposer.learn()
+
 			self.combinations = []
 			i_pool = []
 			# And a limited subset of pool members with highest theta is appended to the list of combinations.
-			for label in xrange(0,self.dataset.classes):
+			for label in xrange(0,len(self.dataset.classes)):
 				n_pool = sorted(e_pool, key=lambda exposer: exposer.thetas[label], reverse=True)
-				n_pool = n_pool[0:(limit/self.dataset.classes)]
+				n_pool = n_pool[0:(limit / len(self.dataset.classes))]
 				for exposer in n_pool:
 					self.combinations.append((exposer.chosenLambda))
-				
-	# ### Prediction
-	# Prediction in this case is just creating and configuring exposer for every combination from a list and performing the prediction for every member.
-	def predict(self):
-		self.dataset.clearSupports()
+
 		for combination in self.combinations:
 			chosen_lambda = list(combination)
 			exposerConfiguration = {'chosenLambda': chosen_lambda}
 			exposerConfiguration.update(self.configuration)
 			exposer = Exposer(self.dataset,exposerConfiguration)
+			self.exposers.append(exposer)
+
+	
+	def learn(self):
+		for exposer in self.exposers:
+			exposer.learn()
+
+	# ### Prediction
+	# Prediction in this case is just creating and configuring exposer for every combination from a list and performing the prediction for every member.
+	def predict(self):
+		self.dataset.clearSupports()
+		for exposer in self.exposers:
 			exposer.predict()
