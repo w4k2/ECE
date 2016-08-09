@@ -1,17 +1,26 @@
 # IMPORTS
+from utils import getType
 import csv
 import numpy as np
 import random
 
 # SAMPLE
 class Sample:
-	def __init__(self,row):
-  		width = len(row)
-  		self.label = int(row[width - 1])
+	def __init__(self,features,label):
+		# Label is INT
+		# Feature vector is float
+  		width = len(features)
+  		self.label = label
   		self.prediction = 0
   		self.support = None
-  		self.features = np.array(row[0:width - 1]).astype(np.float)
+
+		# Missing values are None
+  		for index, value in enumerate(features):
+  			if value == '?':
+  				features[index] = None
   		
+  		self.features = np.array(features).astype(np.float)
+
 	def decidePrediction(self):
   		self.prediction = np.argmax(self.support)
 			

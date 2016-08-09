@@ -1,4 +1,5 @@
 from Sample import *
+from utils import getType
 import csv
 import numpy as np
 import random
@@ -9,7 +10,7 @@ np.seterr(divide='ignore', invalid='ignore')
 SEED = 123
 FOLDS = 5
 random.seed(SEED)
-  	
+
 # DATASET
 class Dataset:
 	def __init__(self, filename, resample = 0):
@@ -17,13 +18,26 @@ class Dataset:
 		wisepath = re.findall(r"[\w']+", filename)
 		self.dbname = wisepath[len(wisepath)-2]
 		self.source_samples = []
-	  	self.classes = 0
 	  	self.test = []
+	  	self.hasHeader = False
+	  	self.header = []
+
+		self.classes = -1
+		classesHash = {}
 		with open(filename, 'rb') as file:
 			csvDataset = csv.reader(file, delimiter=',')
 			for row in csvDataset:
-				#print row
-				self.source_samples.append(Sample(row))
+				if getType(row[0]) == str:
+					self.hasHeader = True
+					self.header = row
+				else:
+					label = row[-1]
+					features = row[0:-1]
+					if not label in classesHash:
+						self.classes += 1
+						classesHash.update({label: self.classes})
+					self.source_samples.append(Sample(features,classesHash[label]))
+		self.classes += 1
 
 		# normalize
 		self.normalize()
@@ -33,11 +47,7 @@ class Dataset:
 			random.shuffle(self.source_samples)
 			self.source_samples = self.source_samples[0:resample]
 
-		# Count classes
-		for sample in self.source_samples:
-			if sample.label > self.classes:
-				self.classes = sample.label
-		self.classes += 1
+		# Count features
 	  	self.features = len(self.source_samples[0].features)
 
 	  	# Initialize supports
@@ -111,22 +121,40 @@ class Dataset:
 		return scores
 
 	def normalize(self):
-		minimum = np.array(self.source_samples[0].features)
-		maximum = np.array(self.source_samples[0].features)
+		example = np.array(self.source_samples[0].features)
+		
+		# Check if there are any NaN's
+		for index, value in enumerate(example):
+			if np.isnan(value):
+				for sample in self.source_samples:
+					if not np.isnan(sample.features[index]):
+						example[index] = sample.features[index]
+						break
 
-		for sample in self.source_samples:
+		minimum = np.array(list(example))
+		maximum = np.array(list(example))
+
+		for index, sample in enumerate(self.source_samples):
 			for index, value in enumerate(sample.features):
 				if value < minimum[index]:
 					minimum[index] = value
 				if value > maximum[index]:
 					maximum[index] = value
 
+		#print minimum
+		#print maximum
+
 		foo = maximum - minimum
 
+		#print foo
 		# O tu sobie poradzmy z 0/0
 		for index, value in enumerate(foo):
 			if value == 0:
 				foo[index] = 1
 
 		for sample in self.source_samples:
-			sample.features = (sample.features - minimum) / foo
+			for index, feature in enumerate(sample.features):
+				if not np.isnan(feature):
+					normalizedFeature = (feature - minimum[index]) / foo[index]
+					#print "%f -> %f" % (feature, normalizedFeature)
+					sample.features[index] = normalizedFeature
