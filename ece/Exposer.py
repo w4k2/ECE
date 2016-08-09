@@ -20,10 +20,9 @@ For a process of classification, first is it required to clear supports for all 
 	scores = dataset.score()
 
 """
-from Dataset import *
-from Classifier import *
 
 from enum import Enum
+from ksskml import *
 import numpy as np
 import math
 import operator

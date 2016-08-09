@@ -22,10 +22,12 @@ For a process of classification you can simply use ensemble to create prediction
 	scores = dataset.score()
 
 """
-from Sample import *
-from Dataset import *
-from Ensemble import *
-from Exposer import *
+#from Sample import *
+#from Dataset import *
+#from Ensemble import *
+#from Exposer import *
+
+from ksskml import *
 
 import itertools
 

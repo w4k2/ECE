@@ -4,3 +4,4 @@ enum
 pycco
 numpy
 coverage
+ksskml
