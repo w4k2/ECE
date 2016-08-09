@@ -5,7 +5,7 @@
 
 To create an _exposer_, all you need is to load a dataset, prepare dictionary with demanded configuration and use them to initiate object.
 
-	dataset = Dataset('data/iris.csv','iris')
+	dataset = Dataset('data/iris.csv')
 	configuration = {
 		'radius': .5, 
 		'grain': 15,
