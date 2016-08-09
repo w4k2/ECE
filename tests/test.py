@@ -115,14 +115,14 @@ def test_missing_ensemble():
     print "\n"
 
     votingMethods = [ExposerVotingMethod.lone, ExposerVotingMethod.theta1, ExposerVotingMethod.theta2, ExposerVotingMethod.theta3, ExposerVotingMethod.thetas]
-    for fold in xrange(0,5):
+    for fold in xrange(0,1):
         print "Fold %i" % fold
         for votingMethod in votingMethods:
             dataset.setCV(fold)
             configuration = {
-                'radius': 1, 
-                'grain': 30,
-                'limit': 60,
+                'radius': .2, 
+                'grain': 10,
+                'limit': 20,
                 'dimensions': [2],
                 'eceApproach': ECEApproach.random,
                 'exposerVotingMethod': votingMethod
