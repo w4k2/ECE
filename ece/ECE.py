@@ -43,7 +43,7 @@ class ECEApproach(Enum):
 # Finally, the **heuristic approach** uses set of exposers in a number given by the `limit` parameter with highest `theta` value from pre-generated pool.
 	heuristic = 3
 
-# === Exposer Ensemble Classifier
+# === Exposer Classifier Ensemble
 class ECE:
 	# ==== Preparing an ensemble
 	def __init__(self, dataset, configuration):

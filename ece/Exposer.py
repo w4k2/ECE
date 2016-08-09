@@ -5,7 +5,7 @@
 
 To create an _exposer_, all you need is to load a dataset, prepare dictionary with demanded configuration and use them to initiate object.
 
-	dataset = Dataset('data/iris.csv','iris')
+	dataset = Dataset('data/iris.csv')
 	configuration = {
 		'radius': .5, 
 		'grain': 15,
@@ -72,7 +72,7 @@ class Exposer(object):
 
 		# It gives us enough information to create an empty `matrix` which will store all the information in our _exposer_. Abstraction of n-dimensional array of _pixels_ is realized by the one dimensional list, combined with `position()` function, which will be described later. Pixel here consists of as many values, as we have classes in dataset.
 		width = int(math.pow(self.grain,self.dimensions))
-		height = self.dataset.classes
+		height = len(self.dataset.classes)
 		self.matrix = [[0 for x in range(height)] for y in range(width)]
 		self.hsv = [[0 for x in range(3)] for y in range(width)]
 		
@@ -128,10 +128,10 @@ class Exposer(object):
 		# To establish measures, we calculate HSV representation of color for every sample. Like in classic RGB2HSV computation, V is a maximum value from cone-response vector and S is a product of dividing delta by V. To receive a delta for situations, where we have different number of base colors than three, we are simply dividing index of maximal value by a number of classes.
 
 		treshold = .7
-		self.thetas = [0] * self.dataset.classes
-		thetas_count = [1] * self.dataset.classes
+		self.thetas = [0] * len(self.dataset.classes)
+		thetas_count = [1] * len(self.dataset.classes)
 
-		presence = np.array([0.] * self.dataset.classes)
+		presence = np.array([0.] * len(self.dataset.classes))
 
 		for index, pixel in enumerate(self.matrix):
 			cmax = np.max(pixel)
@@ -140,10 +140,10 @@ class Exposer(object):
 			cmin_i = np.argmin(pixel)
 			delta = cmax - cmin
 
-			hue = float(cmax_i) / dataset.classes
+			hue = float(cmax_i) / len(dataset.classes)
 
 			if hue != 0:
-				a = np.array(xrange(1,dataset.classes + 1,1))
+				a = np.array(xrange(1,len(dataset.classes) + 1,1))
 				foo = map(operator.mul, a, pixel)
 				u = sum(pixel)
 				
@@ -158,7 +158,7 @@ class Exposer(object):
 				presence[cmax_i] += 1
 
 		presence /= sum(presence)
-		self.thetas = ([1] * self.dataset.classes) - presence
+		self.thetas = ([1] * len(self.dataset.classes)) - presence
 
 		# And a single measure per _exposer_ is mean value of class measures.
 		self.theta = np.mean(self.thetas)
@@ -191,7 +191,7 @@ class Exposer(object):
 			if self.exposerVotingMethod == ExposerVotingMethod.theta2:
 				givenSupport = map(operator.mul, self.thetas, support)
 
-			# When we use **theta3**, a product multiplies ensemble support and a vector measure `thetas`.
+			# When we use **theta3**, a product multiplies ensemble support and both a vector and a scalar `theta` measures.
 			if self.exposerVotingMethod == ExposerVotingMethod.theta3:
 				givenSupport = self.theta * np.array(map(operator.mul, self.thetas, support))
 
@@ -199,7 +199,6 @@ class Exposer(object):
 			if self.exposerVotingMethod == ExposerVotingMethod.thetas:
 				saturation = self.hsv[position][1]
 				givenSupport = saturation * self.theta * np.array(map(operator.mul, self.thetas, support))
-
 
 			# Finally, we demand on `sample` to establish a prediction, according to its accumulated support vector.
 			sample.support += givenSupport

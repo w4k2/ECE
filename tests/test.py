@@ -1,5 +1,5 @@
 from ece import *
-from numpy import *
+import numpy as np
 
 def blue():
     return "\033[92m"
@@ -9,10 +9,11 @@ def endcolor():
 
 def test_dataset():
     """Does dataset loads properly?"""
-    dataset = Dataset('data/iris.csv','iris')
+    print ""
+    dataset = Dataset('data/iris.csv')
 
 	# Amount of classes, samples and features
-    assert dataset.classes == 3
+    assert len(dataset.classes) == 3
     assert len(dataset.samples) == 150
     assert dataset.features == 4
 
@@ -22,13 +23,33 @@ def test_dataset():
     		assert value >= 0 and value <= 1
 
     # Proper resampling
-    dataset = Dataset('data/iris.csv','iris', 50)
+    dataset = Dataset('data/iris.csv', 50)
+    print "%s%s%s" % (blue(), dataset, endcolor())
+    assert len(dataset.samples) == 50
+
+def test_missing_dataset():
+    """Does dataset with missing labels loads properly?"""
+    print ""
+    dataset = Dataset('data/hyper.csv')
+
+    # Amount of classes, samples and features
+    assert len(dataset.classes) == 6
+    assert len(dataset.samples) == 1424
+    assert dataset.features == 19
+
+    # Proper normalization
+    for sample in dataset.samples:
+        for value in sample.features:
+            assert np.isnan(value) or value >= 0 and value <= 1
+
+    # Proper resampling
+    dataset = Dataset('data/hyper.csv', 50)
     print "%s%s%s" % (blue(), dataset, endcolor())
     assert len(dataset.samples) == 50
 
 def test_exposer():
     """Do exposer classify?"""
-    dataset = Dataset('data/wine.csv','wine')
+    dataset = Dataset('data/wine.csv')
     dataset.setCV(0)
 
     configuration = {
@@ -42,16 +63,16 @@ def test_exposer():
     scores = dataset.score()
 
     print  "\n\t%sACC = %.3f%s" % (blue(), scores['accuracy'], endcolor())
-    assert isnan(scores['accuracy']) == False
+    assert np.isnan(scores['accuracy']) == False
 
 
 def test_ensemble():
     """How do ensemble classify according to participations?"""
-    dataset = Dataset('data/wine.csv','wine')
+    dataset = Dataset('data/wine.csv')
     print "\n"
 
     votingMethods = [ExposerVotingMethod.lone, ExposerVotingMethod.theta1, ExposerVotingMethod.theta2, ExposerVotingMethod.theta3, ExposerVotingMethod.thetas]
-    for fold in xrange(0,4):
+    for fold in xrange(0,1):
         print "Fold %i" % fold
         for votingMethod in votingMethods:
             dataset.setCV(fold)
@@ -69,4 +90,4 @@ def test_ensemble():
             scores = dataset.score()
             
             print  "\t%sACC = %.3f%s" % (blue(), scores['accuracy'], endcolor())
-            assert isnan(scores['accuracy']) == False
+            assert np.isnan(scores['accuracy']) == False
