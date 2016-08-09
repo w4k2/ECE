@@ -90,6 +90,10 @@ class Exposer(object):
 			label = sample.label
 			features = [sample.features[index] for index in self.chosenLambda]
 
+			# Ignore samples with missing values
+			if np.isnan(features).any():
+				continue
+
 			# According to `features`, we `establish` a `location` of point in exposers space, corresponding to processed `sample`.
 			location_f = np.array(features) * self.grain			
 			location_i = (location_f).astype(int)
@@ -168,6 +172,12 @@ class Exposer(object):
 		for sample in self.dataset.test:
 			# To predict a class for a `sample` from a test set, we read a subset of its features for chosen lambda and calculate a corresponding location for existing _exposer_.
 			features = [sample.features[index] for index in self.chosenLambda]
+
+			# Place .5 instead missing values for prediction.
+			for index, feature in enumerate(features):
+				if np.isnan(feature):
+					features[index] = .5
+
 			location = (np.array(features) * self.grain).astype(int)
 
 			# Thus the testing set could contain samples with feature values outside the range from a training set, we need to deal with a hazard of matrix overflow.
