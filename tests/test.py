@@ -49,7 +49,7 @@ def test_missing_dataset():
 
 def test_knn():
     """Do KNN classify?"""
-    dataset = Dataset('data/hyperbi.csv')
+    dataset = Dataset('data/hyper.csv')
     dataset.setCV(0)
 
     configuration = {
@@ -138,7 +138,7 @@ def test_missing_ensemble():
     print "\n"
 
     votingMethods = [ExposerVotingMethod.thetas]
-    for fold in xrange(0,5):
+    for fold in xrange(0,1):
         print "Fold %i" % fold
         for votingMethod in votingMethods:
             dataset.setCV(fold)
