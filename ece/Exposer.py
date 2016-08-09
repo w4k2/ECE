@@ -21,6 +21,7 @@ For a process of classification, first is it required to clear supports for all 
 
 """
 from Dataset import *
+from Classifier import *
 
 from enum import Enum
 import numpy as np
@@ -49,9 +50,10 @@ class ExposerVotingMethod(Enum):
 	thetas = 5
 
 # === _Exposer_ ===
-class Exposer(object):
+class Exposer(Classifier):
 	# ==== Preparing an _exposer_ ====
 	def __init__(self, dataset, configuration):
+		Classifier.__init__(self,dataset)
 		# First, we're collecting four values from passed configuration:
 		#
 		#- **voting method**, described above,
@@ -64,28 +66,28 @@ class Exposer(object):
 		self.grain = configuration['grain']
 		self.radius = configuration['radius']
 		self.chosenLambda = configuration['chosenLambda']
-		self.isBonus = True
 
-		# Later, we're gathering the dataset and calculating number of data structure dimensions, from a number of features of `chosenLambda`.
-		self.dataset = dataset
+		# Later, we're calculating number of data structure dimensions, from a number of features of `chosenLambda`.
 		self.dimensions = len(self.chosenLambda)
 
-		# It gives us enough information to create an empty `matrix` which will store all the information in our _exposer_. Abstraction of n-dimensional array of _pixels_ is realized by the one dimensional list, combined with `position()` function, which will be described later. Pixel here consists of as many values, as we have classes in dataset.
-		width = int(math.pow(self.grain,self.dimensions))
-		height = len(self.dataset.classes)
-		self.matrix = [[0 for x in range(height)] for y in range(width)]
-		self.hsv = [[0 for x in range(3)] for y in range(width)]
-		
 		# To optimize time of positioning in array, we once calculate a vector of consecutive powers of given `grain`. 
 		self.g = [1] * self.dimensions
 		for i in xrange(1,self.dimensions):
 			self.g[i] = self.g[i-1] * self.grain
 
 		# To optimize time of computing a single sample influence, we prepare the set of base move-vectors for given `radius`, with precalculated distance to a central point.
-		dropVectors = self.dropVectors()
-				
+		self.dropVectors = self.dropVectors()
+
+	# === Learning ===
+	def learn(self):
+		# It gives us enough information to create an empty `matrix` which will store all the information in our _exposer_. Abstraction of n-dimensional array of _pixels_ is realized by the one dimensional list, combined with `position()` function, which will be described later. Pixel here consists of as many values, as we have classes in dataset.
+		width = int(math.pow(self.grain,self.dimensions))
+		height = len(self.dataset.classes)
+		self.model = [[0 for x in range(height)] for y in range(width)]
+		self.hsv = [[0 for x in range(3)] for y in range(width)]
+
 		# ==== Exposing array on a beam of samples ====
-		for sample in dataset.samples:
+		for sample in self.dataset.samples:
 			# For every `sample` in a `dataset`, we read its `label` and a subset of its `features` for `chosenLambda`.
 			label = sample.label
 			features = [sample.features[index] for index in self.chosenLambda]
@@ -103,11 +105,11 @@ class Exposer(object):
 			factor = 5 - distance
 			
 			# Now we can iterate every `dropVector`.
-			for dropVector in dropVectors:
+			for dropVector in self.dropVectors:
 				# Simple addition between quantified location and a drop vector gives us a real location (`vector`), where the influence will be placed. 
 				vector = map(operator.add, dropVector[0], location_i)
 
-				# Thus the real location may overflow the space of _exposer_, we need to deal with it by checking if its value fits in range of matrix.
+				# Thus the real location may overflow the space of _exposer_, we need to deal with it by checking if its value fits in range of model.
 				overflow = False
 				for i in xrange(0,self.dimensions):
 					if vector[i] < 0 or vector[i] >= self.grain:
@@ -119,53 +121,10 @@ class Exposer(object):
 				# Finally, we can calculate the real `influence` as a product of drop vector distance from central point and precalculated factor. After calculating its index for single-dimension representation, it is added to matrix at row corresponding to a sample `label`.
 				influence = dropVector[1] * factor
 				position = self.position(vector)
-				self.matrix[position][label] += influence
+				self.model[position][label] += influence
 
-		# ==== Matrix normalization ====
-
-		# We normalize values of each class in range (0,1).
-		foo = np.amax(self.matrix, axis=0)
-		self.matrix /= foo
-
-		# ==== Calculating measures ====
-
-		# To establish measures, we calculate HSV representation of color for every sample. Like in classic RGB2HSV computation, V is a maximum value from cone-response vector and S is a product of dividing delta by V. To receive a delta for situations, where we have different number of base colors than three, we are simply dividing index of maximal value by a number of classes.
-
-		treshold = .7
-		self.thetas = [0] * len(self.dataset.classes)
-		thetas_count = [1] * len(self.dataset.classes)
-
-		presence = np.array([0.] * len(self.dataset.classes))
-
-		for index, pixel in enumerate(self.matrix):
-			cmax = np.max(pixel)
-			cmax_i = np.argmax(pixel)
-			cmin = np.min(pixel)
-			cmin_i = np.argmin(pixel)
-			delta = cmax - cmin
-
-			hue = float(cmax_i) / len(dataset.classes)
-
-			if hue != 0:
-				a = np.array(xrange(1,len(dataset.classes) + 1,1))
-				foo = map(operator.mul, a, pixel)
-				u = sum(pixel)
-				
-			saturation = 0
-			if cmax != 0:
-				saturation = delta / cmax
-			value = cmax
-
-			self.hsv[index] = (hue, saturation, value)
-
-			if value > treshold:
-				presence[cmax_i] += 1
-
-		presence /= sum(presence)
-		self.thetas = ([1] * len(self.dataset.classes)) - presence
-
-		# And a single measure per _exposer_ is mean value of class measures.
-		self.theta = np.mean(self.thetas)
+		self.normalize()
+		self.calculate_measures()
 
 	# === Prediction ===
 	def predict(self):
@@ -187,7 +146,7 @@ class Exposer(object):
 
 			# Corrected location makes possible to calculate `position` of testing sample in single-dimension representation, which lets us to gather the corresponding `support` vector.
 			position = self.position(location)
-			support = self.matrix[position]
+			support = self.model[position]
 
 			# For the **lone** participation, we simply add the support vector to the support accumulator inside the sample object.
 			if self.exposerVotingMethod == ExposerVotingMethod.lone:
@@ -280,7 +239,7 @@ Below we can see an example visualization for the `iris` dataset with chosen lam
 			for x in xrange(0,self.grain):
 				vector[0] = x
 				hsv = self.hsv[self.position(vector)]
-				support = enumerate(self.matrix[self.position(vector)])
+				support = enumerate(self.model[self.position(vector)])
 				rgb = [0] * 3
 				for index, value in support:
 					if index > 2:
@@ -317,3 +276,50 @@ Below we can see an example visualization for the `iris` dataset with chosen lam
 		f = open(filename, 'wb')
 		w = png.Writer(self.grain, self.grain)
 		w.write(f, image) ; f.close()
+
+	# ==== Calculating measures ====
+	def calculate_measures(self):
+		# To establish measures, we calculate HSV representation of color for every sample. Like in classic RGB2HSV computation, V is a maximum value from cone-response vector and S is a product of dividing delta by V. To receive a delta for situations, where we have different number of base colors than three, we are simply dividing index of maximal value by a number of classes.
+
+		treshold = .7
+		self.thetas = [0] * len(self.dataset.classes)
+		thetas_count = [1] * len(self.dataset.classes)
+
+		presence = np.array([0.] * len(self.dataset.classes))
+
+		for index, pixel in enumerate(self.model):
+			cmax = np.max(pixel)
+			cmax_i = np.argmax(pixel)
+			cmin = np.min(pixel)
+			cmin_i = np.argmin(pixel)
+			delta = cmax - cmin
+
+			hue = float(cmax_i) / len(self.dataset.classes)
+
+			if hue != 0:
+				a = np.array(xrange(1,len(self.dataset.classes) + 1,1))
+				foo = map(operator.mul, a, pixel)
+				u = sum(pixel)
+				
+			saturation = 0
+			if cmax != 0:
+				saturation = delta / cmax
+			value = cmax
+
+			self.hsv[index] = (hue, saturation, value)
+
+			if value > treshold:
+				presence[cmax_i] += 1
+
+		presence /= sum(presence)
+		self.thetas = ([1] * len(self.dataset.classes)) - presence
+
+		# And a single measure per _exposer_ is mean value of class measures.
+		self.theta = np.mean(self.thetas)
+
+	def normalize(self):
+		# ==== Matrix normalization ====
+
+		# We normalize values of each class in range (0,1).
+		foo = np.amax(self.model, axis=0)
+		self.model /= foo

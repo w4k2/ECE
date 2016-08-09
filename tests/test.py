@@ -47,6 +47,24 @@ def test_missing_dataset():
     print "%s%s%s" % (blue(), dataset, endcolor())
     assert len(dataset.samples) == 50
 
+def test_knn():
+    """Do KNN classify?"""
+    dataset = Dataset('data/hyper.csv')
+    dataset.setCV(0)
+
+    configuration = {
+        'k': 20
+    }
+
+    knn = KNN(dataset, configuration)
+    knn.learn()
+    dataset.clearSupports()
+    knn.predict()
+    scores = dataset.score()
+
+    print  "\n\t%sACC = %.3f%s" % (blue(), scores['accuracy'], endcolor())
+    assert np.isnan(scores['accuracy']) == False
+
 def test_exposer():
     """Do exposer classify?"""
     dataset = Dataset('data/wine.csv')
@@ -58,6 +76,7 @@ def test_exposer():
         'chosenLambda': [2, 4]
     }
     exposer = Exposer(dataset, configuration)
+    exposer.learn()
     dataset.clearSupports()
     exposer.predict()
     scores = dataset.score()
@@ -73,9 +92,10 @@ def test_missing_exposer():
     configuration = {
         'radius': .25, 
         'grain': 20,
-        'chosenLambda': [2, 4]
+        'chosenLambda': [2, 5]
     }
     exposer = Exposer(dataset, configuration)
+    exposer.learn()
     dataset.clearSupports()
     exposer.predict()
     scores = dataset.score()
@@ -97,11 +117,14 @@ def test_ensemble():
                 'radius': .2, 
                 'grain': 10, 
                 'limit': 20, 
+                'pool': 40,
                 'dimensions': [2],
-                'eceApproach': ECEApproach.random,
+                'eceApproach': ECEApproach.heuristic,
                 'exposerVotingMethod': votingMethod
             }
             ensemble = ECE(dataset,configuration)
+            ensemble.learn()
+            dataset.clearSupports()
         
             ensemble.predict()
             scores = dataset.score()
@@ -115,19 +138,22 @@ def test_missing_ensemble():
     print "\n"
 
     votingMethods = [ExposerVotingMethod.lone, ExposerVotingMethod.theta1, ExposerVotingMethod.theta2, ExposerVotingMethod.theta3, ExposerVotingMethod.thetas]
-    for fold in xrange(0,1):
+    for fold in xrange(0,5):
         print "Fold %i" % fold
         for votingMethod in votingMethods:
             dataset.setCV(fold)
             configuration = {
-                'radius': .2, 
-                'grain': 10,
-                'limit': 20,
-                'dimensions': [2],
-                'eceApproach': ECEApproach.random,
+                'radius': .5, 
+                'grain': 40,
+                'limit': 30,
+                'pool': 60,
+                'dimensions': [1,2],
+                'eceApproach': ECEApproach.heuristic,
                 'exposerVotingMethod': votingMethod
             }
             ensemble = ECE(dataset,configuration)
+            ensemble.learn()
+            dataset.clearSupports()
         
             ensemble.predict()
             scores = dataset.score()
