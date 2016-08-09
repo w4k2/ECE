@@ -25,11 +25,15 @@ For a process of classification you can simply use ensemble to create prediction
 #from Sample import *
 #from Dataset import *
 #from Ensemble import *
-#from Exposer import *
+from Exposer import *
 
-from ksskml import *
+from ksskml import Ensemble
+from ksskml import Dataset
+from ksskml import Sample
+from ksskml import utils
 
 import itertools
+import random
 
 # ### ECE Approach
 # There are three approaches possible to build an ensemble.

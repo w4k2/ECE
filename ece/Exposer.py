@@ -21,8 +21,11 @@ For a process of classification, first is it required to clear supports for all 
 
 """
 
+from ksskml import Classifier
+from ksskml import Dataset
+
 from enum import Enum
-from ksskml import *
+
 import numpy as np
 import math
 import operator
