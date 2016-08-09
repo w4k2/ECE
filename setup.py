@@ -10,7 +10,7 @@ with open('LICENSE') as f:
 
 setup(
     name='ece',
-    version='0.5',
+    version='0.5.1',
     description='Exposer Classifier Ensemble',
     long_description=readme,
     author='Paweł Ksieniewicz',
@@ -18,5 +18,5 @@ setup(
     url='https://github.com/w4k2/ece',
     package_data={'': ['LICENSE']},
     license=license,
-    packages=find_packages(exclude=('docs','tests','README.md','data'))
+    packages=find_packages(exclude=('docs','tests','README.md'))
 )

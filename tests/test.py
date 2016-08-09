@@ -137,17 +137,17 @@ def test_missing_ensemble():
     dataset = Dataset('data/hyper.csv')
     print "\n"
 
-    votingMethods = [ExposerVotingMethod.lone, ExposerVotingMethod.theta1, ExposerVotingMethod.theta2, ExposerVotingMethod.theta3, ExposerVotingMethod.thetas]
-    for fold in xrange(0,5):
+    votingMethods = [ExposerVotingMethod.thetas]
+    for fold in xrange(0,1):
         print "Fold %i" % fold
         for votingMethod in votingMethods:
             dataset.setCV(fold)
             configuration = {
-                'radius': .5, 
-                'grain': 40,
-                'limit': 30,
-                'pool': 60,
-                'dimensions': [1,2],
+                'radius': .2, 
+                'grain': 10,
+                'limit': 10,
+                'pool': 20,
+                'dimensions': [2],
                 'eceApproach': ECEApproach.heuristic,
                 'exposerVotingMethod': votingMethod
             }
