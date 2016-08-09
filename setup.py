@@ -17,7 +17,6 @@ setup(
     author_email='pawel.ksieniewicz@pwr.edu.pl',
     url='https://github.com/w4k2/ece',
     package_data={'': ['LICENSE']},
-#    scripts=['ece/eceExperiment',],
     license=license,
     packages=find_packages(exclude=('docs','tests','README.md','data'))
 )

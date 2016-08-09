@@ -65,6 +65,23 @@ def test_exposer():
     print  "\n\t%sACC = %.3f%s" % (blue(), scores['accuracy'], endcolor())
     assert np.isnan(scores['accuracy']) == False
 
+def test_missing_exposer():
+    """Do exposer classify missing values?"""
+    dataset = Dataset('data/hyper.csv')
+    dataset.setCV(0)
+
+    configuration = {
+        'radius': .25, 
+        'grain': 20,
+        'chosenLambda': [2, 4]
+    }
+    exposer = Exposer(dataset, configuration)
+    dataset.clearSupports()
+    exposer.predict()
+    scores = dataset.score()
+
+    print  "\n\t%sACC = %.3f%s" % (blue(), scores['accuracy'], endcolor())
+    assert np.isnan(scores['accuracy']) == False
 
 def test_ensemble():
     """How do ensemble classify according to participations?"""
@@ -80,6 +97,32 @@ def test_ensemble():
                 'radius': .2, 
                 'grain': 10, 
                 'limit': 20, 
+                'dimensions': [2],
+                'eceApproach': ECEApproach.random,
+                'exposerVotingMethod': votingMethod
+            }
+            ensemble = ECE(dataset,configuration)
+        
+            ensemble.predict()
+            scores = dataset.score()
+            
+            print  "\t%sACC = %.3f%s" % (blue(), scores['accuracy'], endcolor())
+            assert np.isnan(scores['accuracy']) == False
+
+def test_missing_ensemble():
+    """How do ensemble classify missing-values data according to participations?"""
+    dataset = Dataset('data/hyper.csv')
+    print "\n"
+
+    votingMethods = [ExposerVotingMethod.lone, ExposerVotingMethod.theta1, ExposerVotingMethod.theta2, ExposerVotingMethod.theta3, ExposerVotingMethod.thetas]
+    for fold in xrange(0,5):
+        print "Fold %i" % fold
+        for votingMethod in votingMethods:
+            dataset.setCV(fold)
+            configuration = {
+                'radius': 1, 
+                'grain': 30,
+                'limit': 60,
                 'dimensions': [2],
                 'eceApproach': ECEApproach.random,
                 'exposerVotingMethod': votingMethod
