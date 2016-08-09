@@ -10,7 +10,7 @@ publish: test
 test:
 	clear
 	rm -rf data
-	git clone --depth=1 git@github.com:w4k2/data.git data
+	git clone --depth=1 https://github.com/w4k2/data.git data
 	nosetests --verbosity=2 --with-coverage -x --with-xunit -cover-erase --cover-package=ece --nocapture
 	rm -rf data
 	
