@@ -13,7 +13,7 @@ def test_dataset():
     dataset = Dataset('data/iris.csv')
 
 	# Amount of classes, samples and features
-    assert dataset.classes == 3
+    assert len(dataset.classes) == 3
     assert len(dataset.samples) == 150
     assert dataset.features == 4
 
@@ -33,7 +33,7 @@ def test_missing_dataset():
     dataset = Dataset('data/hyper.csv')
 
     # Amount of classes, samples and features
-    assert dataset.classes == 6
+    assert len(dataset.classes) == 6
     assert len(dataset.samples) == 1424
     assert dataset.features == 19
 

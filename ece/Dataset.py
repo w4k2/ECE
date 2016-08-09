@@ -16,14 +16,14 @@ class Dataset:
 	def __init__(self, filename, resample = 0):
 		# Load db
 		wisepath = re.findall(r"[\w']+", filename)
-		self.dbname = wisepath[len(wisepath)-2]
+		self.db_name = wisepath[len(wisepath)-2]
 		self.source_samples = []
 	  	self.test = []
-	  	self.hasHeader = False
+	  	self.has_header = False
 	  	self.header = []
+	  	self.confusion_matrix = []
 
-		self.classes = -1
-		classesHash = {}
+		self.classes = {}
 		with open(filename, 'rb') as file:
 			csvDataset = csv.reader(file, delimiter=',')
 			for row in csvDataset:
@@ -33,11 +33,9 @@ class Dataset:
 				else:
 					label = row[-1]
 					features = row[0:-1]
-					if not label in classesHash:
-						self.classes += 1
-						classesHash.update({label: self.classes})
-					self.source_samples.append(Sample(features,classesHash[label]))
-		self.classes += 1
+					if not label in self.classes:
+						self.classes.update({label: len(self.classes)})
+					self.source_samples.append(Sample(features,self.classes[label]))
 
 		# normalize
 		self.normalize()
@@ -66,10 +64,10 @@ class Dataset:
 
 	def clearSupports(self):
 		for sample in self.source_samples:
-			sample.support = np.zeros(self.classes)
+			sample.support = np.zeros(len(self.classes))
 
 	def __str__(self):
-		return "%s dataset" % (self.dbname)
+		return "%s dataset" % (self.db_name)
 
 	def setCV(self,fold):
 		self.samples = []
@@ -82,23 +80,23 @@ class Dataset:
 
 	def score(self):
 		# https://en.wikipedia.org/wiki/Confusion_matrix
-		confusion_matrix = np.zeros((self.classes,self.classes)).astype(int)
+		self.confusion_matrix = np.zeros((len(self.classes),len(self.classes))).astype(int)
 
 		for sample in self.test:
-			confusion_matrix[sample.label,sample.prediction] += 1
+			self.confusion_matrix[sample.label,sample.prediction] += 1
 
-		true_positives = np.zeros(self.classes).astype(float)
-		false_negatives = np.zeros(self.classes).astype(float)
-		false_positives = np.zeros(self.classes).astype(float)
-		true_negatives = np.zeros(self.classes).astype(float)
+		true_positives = np.zeros(len(self.classes)).astype(float)
+		false_negatives = np.zeros(len(self.classes)).astype(float)
+		false_positives = np.zeros(len(self.classes)).astype(float)
+		true_negatives = np.zeros(len(self.classes)).astype(float)
 		
-		for pro in xrange(0,self.classes):
-			true_positives[pro] += confusion_matrix[pro,pro]
-			for contra in xrange(0,self.classes):
+		for pro in xrange(0,len(self.classes)):
+			true_positives[pro] += self.confusion_matrix[pro,pro]
+			for contra in xrange(0,len(self.classes)):
 				if pro == contra: continue
-				false_negatives[pro] += confusion_matrix[pro,contra]
-				false_positives[pro] += confusion_matrix[contra,pro]
-			true_negatives[pro] = sum(sum(confusion_matrix)) - true_positives[pro] - false_negatives[pro] - false_positives[pro]
+				false_negatives[pro] += self.confusion_matrix[pro,contra]
+				false_positives[pro] += self.confusion_matrix[contra,pro]
+			true_negatives[pro] = sum(sum(self.confusion_matrix)) - true_positives[pro] - false_negatives[pro] - false_positives[pro]
 
 		sensitivity = true_positives / (true_positives + false_negatives)
 		specificity = true_negatives / (false_positives + true_negatives)
@@ -121,8 +119,7 @@ class Dataset:
 		return scores
 
 	def normalize(self):
-		example = np.array(self.source_samples[0].features)
-		
+		example = np.array(self.source_samples[0].features)		
 		# Check if there are any NaN's
 		for index, value in enumerate(example):
 			if np.isnan(value):
@@ -141,12 +138,8 @@ class Dataset:
 				if value > maximum[index]:
 					maximum[index] = value
 
-		#print minimum
-		#print maximum
-
 		foo = maximum - minimum
 
-		#print foo
 		# O tu sobie poradzmy z 0/0
 		for index, value in enumerate(foo):
 			if value == 0:
@@ -156,5 +149,4 @@ class Dataset:
 			for index, feature in enumerate(sample.features):
 				if not np.isnan(feature):
 					normalizedFeature = (feature - minimum[index]) / foo[index]
-					#print "%f -> %f" % (feature, normalizedFeature)
 					sample.features[index] = normalizedFeature
