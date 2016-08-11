@@ -1,4 +1,4 @@
-# ECE [![Build Status](https://travis-ci.org/xehivs/ECE.svg?branch=master)](https://travis-ci.org/xehivs/ECE)
+# ECE [![Build Status](https://travis-ci.org/w4k2/ECE.svg?branch=master)](https://travis-ci.org/w4k2/ECE)
 
 **Exposer** is a data structure drawing from both <em>histogram</em> and a <em>scatter plot</em>. Like in <em>histogram</em>, the range of values is divided into a series of intervals, but like in a <em>scatter plot</em> the combination of features is analyzed. The rule of bin adjacency is here broken, so object may fall into more than one of them.
 
