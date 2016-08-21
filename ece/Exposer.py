@@ -29,6 +29,7 @@ Dictionary with scores is provided by a function `score()` being a member of
 
 """
 
+
 from ksskml import Classifier
 
 from enum import Enum
@@ -63,6 +64,7 @@ class ExposerVotingMethod(Enum):
 # === _Exposer_ ===
 class Exposer(Classifier):
     # ==== Preparing an _exposer_ ====
+
     def __init__(self, dataset, configuration):
         Classifier.__init__(self, dataset)
         # First, we're collecting four values from passed configuration:
@@ -87,7 +89,7 @@ class Exposer(Classifier):
         # of consecutive powers of given `grain`.
         self.g = [1] * self.dimensions
         for i in xrange(1, self.dimensions):
-            self.g[i] = self.g[i-1] * self.grain
+            self.g[i] = self.g[i - 1] * self.grain
 
         # To optimize time of computing a single sample influence, we prepare
         # the set of base move-vectors for given `radius`, with precalculated
@@ -256,7 +258,7 @@ class Exposer(Classifier):
         v = [-1] * self.dimensions
         z = [1] * self.dimensions
         for i in xrange(1, self.dimensions):
-            z[i] = z[i-1] * diameter
+            z[i] = z[i - 1] * diameter
 
         # And iterate all points in range.
         for i in xrange(0, pow(diameter, self.dimensions)):
@@ -276,7 +278,8 @@ class Exposer(Classifier):
             # base vector list with a tuple of location and influence, computed
             # as dequantified difference between the two compared values.
             if distance < radius:
-                base_vectors.append((list(point), (radius-distance) / radius))
+                base_vectors.append(
+                    (list(point), (radius - distance) / radius))
 
         return base_vectors
 
@@ -294,6 +297,7 @@ lambda of `[2, 3]` for `1.0` radius and grain of `256` quants.
 
 ![](exposer_vis.png)
     """
+
     def png(self, filename, scale=240):
         image = []
         for y in xrange(0, self.grain):
@@ -318,15 +322,15 @@ lambda of `[2, 3]` for `1.0` radius and grain of `256` quants.
                 m = v - c
                 x = c * (1 - abs((h * 6. % 2) - 1))
 
-                if h < 1./6:
+                if h < 1. / 6:
                     r, g, b = c, x, 0
-                elif h < 2./6:
+                elif h < 2. / 6:
                     r, g, b = x, c, 0
-                elif h < 3./6:
+                elif h < 3. / 6:
                     r, g, b = 0, c, x
-                elif h < 4./6:
+                elif h < 4. / 6:
                     r, g, b = 0, x, c
-                elif h < 5./6:
+                elif h < 5. / 6:
                     r, g, b = x, 0, c
                 else:
                     r, g, b = c, 0, x

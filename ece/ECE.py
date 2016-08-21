@@ -26,12 +26,10 @@ member of `dataset` object.
 
 """
 from Exposer import *
-
 from ksskml import Ensemble
 from ksskml import Dataset
 from ksskml import Sample
 from ksskml import utils
-
 import itertools
 import random
 
@@ -54,6 +52,7 @@ class ECEApproach(Enum):
 # === Exposer Classifier Ensemble
 class ECE(Ensemble):
     # ==== Preparing an ensemble
+
     def __init__(self, dataset, configuration):
         Ensemble.__init__(self, dataset)
         # First, we're collecting four values from passed configuration:
