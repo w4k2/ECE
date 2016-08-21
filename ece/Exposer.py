@@ -1,13 +1,18 @@
 """
-**Exposer** is a data structure drawing from both <em>histogram</em> and a <em>scatter plot</em>. Like in <em>histogram</em>, the range of values is divided into a series of intervals, but like in a <em>scatter plot</em> the combination of features is analyzed. The rule of bin adjacency is here broken, so object may fall into more than one of them.
+**Exposer** is a data structure drawing from both <em>histogram</em> and a
+<em>scatter plot</em>. Like in <em>histogram</em>, the range of values is
+divided into a series of intervals, but like in a <em>scatter plot</em> the
+combination of features is analyzed. The rule of bin adjacency is here broken,
+so object may fall into more than one of them.
 
 ### Usage
 
-To create an _exposer_, all you need is to load a dataset, prepare dictionary with demanded configuration and use them to initiate object.
+To create an _exposer_, all you need is to load a dataset, prepare dictionary
+with demanded configuration and use them to initiate object.
 
 	dataset = Dataset('data/iris.csv')
 	configuration = {
-		'radius': .5, 
+		'radius': .5,
 		'grain': 15,
 		'chosenLambda': [2, 3]
 	}
@@ -22,7 +27,6 @@ For a process of classification, first is it required to clear supports for all 
 """
 
 from ksskml import Classifier
-from ksskml import Dataset
 
 from enum import Enum
 
@@ -30,18 +34,17 @@ import numpy as np
 import math
 import operator
 import png
-import functools
-import colorsys
 
 """
 ### _Exposer_ voting method
-_Exposers_ are dedicated to work in classifier ensembles. To establish possible participations in voting, there is an enum with three possible setups:
+_Exposers_ are dedicated to work in classifier ensembles. To establish possible
+participations in voting, there is an enum with three possible setups:
 
-- `lone` - we don't use weights,
-- `theta1` - we use single weight for every _exposer_,
-- `theta2` - we use single weight for every class support coming from each _exposer_,
-- `theta3` - we mix `theta1` and `theta2`,
-- `thetas` - we mix `theta3` and a saturation value.
+- `lone` - don't use weights,
+- `theta1` - use single weight for every _exposer_,
+- `theta2` - use single weight for every class support coming from _exposer_,
+- `theta3` - mix `theta1` and `theta2`,
+- `thetas` - mix `theta3` and a saturation value.
 
 """
 class ExposerVotingMethod(Enum):
@@ -72,7 +75,7 @@ class Exposer(Classifier):
 		# Later, we're calculating number of data structure dimensions, from a number of features of `chosenLambda`.
 		self.dimensions = len(self.chosenLambda)
 
-		# To optimize time of positioning in array, we once calculate a vector of consecutive powers of given `grain`. 
+		# To optimize time of positioning in array, we once calculate a vector of consecutive powers of given `grain`.
 		self.g = [1] * self.dimensions
 		for i in xrange(1,self.dimensions):
 			self.g[i] = self.g[i-1] * self.grain
@@ -99,16 +102,16 @@ class Exposer(Classifier):
 				continue
 
 			# According to `features`, we `establish` a `location` of point in exposers space, corresponding to processed `sample`.
-			location_f = np.array(features) * self.grain			
+			location_f = np.array(features) * self.grain
 			location_i = (location_f).astype(int)
 
 			# The euclidean distance between quantified (`location_i`) and exact location (`location_f`) lets us to establish a `factor` used to correct distances comming from base vectors.
 			distance = math.sqrt(sum([n**2 for n in map(operator.sub,location_i,location_f)]))
 			factor = 5 - distance
-			
+
 			# Now we can iterate every `dropVector`.
 			for dropVector in self.dropVectors:
-				# Simple addition between quantified location and a drop vector gives us a real location (`vector`), where the influence will be placed. 
+				# Simple addition between quantified location and a drop vector gives us a real location (`vector`), where the influence will be placed.
 				vector = map(operator.add, dropVector[0], location_i)
 
 				# Thus the real location may overflow the space of _exposer_, we need to deal with it by checking if its value fits in range of model.
@@ -153,7 +156,7 @@ class Exposer(Classifier):
 			# For the **lone** participation, we simply add the support vector to the support accumulator inside the sample object.
 			if self.exposerVotingMethod == ExposerVotingMethod.lone:
 				givenSupport = support
-				
+
 			# If it is a **theta1** participation, we increase support accumulator by a product of ensemble support and a scalar measure `theta`.
 			if self.exposerVotingMethod == ExposerVotingMethod.theta1:
 				givenSupport = self.theta * np.array(support)
@@ -176,7 +179,7 @@ class Exposer(Classifier):
 			sample.decidePrediction()
 
 	# ---
-	
+
 	# === Helpers ===
 
 	# ==== Position calculator ====
@@ -215,18 +218,18 @@ class Exposer(Classifier):
 
 			# For every point we calculate euclidian distance between it and a centre point.
 			distance = math.sqrt(sum([n**2 for n in map(operator.sub,centre,point)]))
-			
+
 			# If the distance is lower than quantified radius, we extend the base vector list with a tuple of location and influence, computed as dequantified difference between the two compared values.
 			if distance < radius_q:
 				base_vectors.append((list(point), (radius_q - distance) / radius_q))
 
 		return base_vectors
-		
+
 	"""
 #### Visualization
-The visualization of the complete _exposer_, as long as we will have only a two-dimensional screens at our computers, will be a flat PNG image. 
+The visualization of the complete _exposer_, as long as we will have only a two-dimensional screens at our computers, will be a flat PNG image.
 
-RGB values comes here from first three classes of dataset (if we have a binary problem, only red and green channel will be populated), combined with a HSV2RGB conversion, while the axis describes first two dimensions of _exposer_ matrix. 
+RGB values comes here from first three classes of dataset (if we have a binary problem, only red and green channel will be populated), combined with a HSV2RGB conversion, while the axis describes first two dimensions of _exposer_ matrix.
 
 Below we can see an example visualization for the `iris` dataset with chosen lambda of `[2, 3]` for `1.0` radius and grain of `256` quants.
 
@@ -274,7 +277,7 @@ Below we can see an example visualization for the `iris` dataset with chosen lam
 					rgb[1] * scale + g * (255 - scale), \
 					rgb[2] * scale + b * (255 - scale))
 			image += [row]
-		
+
 		f = open(filename, 'wb')
 		w = png.Writer(self.grain, self.grain)
 		w.write(f, image) ; f.close()
@@ -302,7 +305,7 @@ Below we can see an example visualization for the `iris` dataset with chosen lam
 				a = np.array(xrange(1,len(self.dataset.classes) + 1,1))
 				foo = map(operator.mul, a, pixel)
 				u = sum(pixel)
-				
+
 			saturation = 0
 			if cmax != 0:
 				saturation = delta / cmax
