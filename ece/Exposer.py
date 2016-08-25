@@ -215,7 +215,7 @@ class Exposer(Classifier):
 
             # When we use **thetas**, a product multiplies ensemble support and
             # a vector measure `thetas`.
-            else self.exposerVotingMethod == ExposerVotingMethod.thetas:
+            else:
                 saturation = self.hsv[position][1]
                 givenSupport = saturation * self.theta * \
                     np.array(map(operator.mul, self.thetas, support))
