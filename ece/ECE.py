@@ -7,7 +7,7 @@ To create an ensemble, all you need is to load a dataset, prepare dictionary
 with demanded configuration and use them to initiate object.
 
     dataset = Dataset('data/iris.csv','iris')
-    configuration = {
+    configuration = {s
         'radius': radius,
         'grain': grain,
         'limit': limit,
