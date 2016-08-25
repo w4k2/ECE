@@ -169,10 +169,11 @@ class Exposer(Classifier):
             # To predict a class for a `sample` from a test set, we read a
             # subset of its features for chosen lambda and calculate a
             # corresponding location for existing _exposer_.
-            features = [sample.features[index] for index in self.chosenLambda]
+            features = np.array(
+                [sample.features[index] for index in self.chosenLambda])
 
             # Place .5 instead missing values for prediction.
-            features = [.5 if x != x else x for x in features]
+            features[np.isnan(features)] = .5
 
             # Establish location
             location = (np.array(features) * self.grain).astype(int)
