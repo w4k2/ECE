@@ -176,14 +176,9 @@ class Exposer(Classifier):
             features[np.isnan(features)] = .5
 
             # Establish location
-            location = (np.array(features) * self.grain).astype(int)
-
-            # Thus the testing set could contain samples with feature values
-            # outside the range from a training set, we need to deal with a
-            # hazard of matrix overflow.
-            for index, element in enumerate(location):
-                if location[index] == self.grain:
-                    location[index] = self.grain - 1
+            location = [
+                int(feature * self.grain) if feature < 1 else self.grain-1
+                for feature in features]
 
             # Corrected location makes possible to calculate `position` of
             # testing sample in single-dimension representation, which lets us
@@ -257,6 +252,7 @@ class Exposer(Classifier):
         # position of point.
         v = [-1] * self.dimensions
         z = [1] * self.dimensions
+
         for i in xrange(1, self.dimensions):
             z[i] = z[i - 1] * diameter
 
@@ -271,8 +267,8 @@ class Exposer(Classifier):
 
             # For every point we calculate euclidian distance between it and a
             # centre point.
-            distance = sum([n**2 for n in map(operator.sub, centre, point)])
-            distance = math.sqrt(distance)
+            distance = math.sqrt(
+                sum([n**2 for n in map(operator.sub, centre, point)]))
 
             # If the distance is lower than quantified radius, we extend the
             # base vector list with a tuple of location and influence, computed
