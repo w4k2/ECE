@@ -199,23 +199,23 @@ class Exposer(Classifier):
             # If it is a **theta1** participation, we increase support
             # accumulator by a product of ensemble support and a scalar measure
             # `theta`.
-            if self.exposerVotingMethod == ExposerVotingMethod.theta1:
+            elif self.exposerVotingMethod == ExposerVotingMethod.theta1:
                 givenSupport = self.theta * np.array(support)
 
             # When we use **theta2**, a product multiplies ensemble support and
             # a vector measure `thetas`.
-            if self.exposerVotingMethod == ExposerVotingMethod.theta2:
+            elif self.exposerVotingMethod == ExposerVotingMethod.theta2:
                 givenSupport = map(operator.mul, self.thetas, support)
 
             # When we use **theta3**, a product multiplies ensemble support and
             # both a vector and a scalar `theta` measures.
-            if self.exposerVotingMethod == ExposerVotingMethod.theta3:
+            elif self.exposerVotingMethod == ExposerVotingMethod.theta3:
                 givenSupport = self.theta * \
                     np.array(map(operator.mul, self.thetas, support))
 
             # When we use **thetas**, a product multiplies ensemble support and
             # a vector measure `thetas`.
-            if self.exposerVotingMethod == ExposerVotingMethod.thetas:
+            elif self.exposerVotingMethod == ExposerVotingMethod.thetas:
                 saturation = self.hsv[position][1]
                 givenSupport = saturation * self.theta * \
                     np.array(map(operator.mul, self.thetas, support))
