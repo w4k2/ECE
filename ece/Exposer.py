@@ -105,10 +105,9 @@ class Exposer(Classifier):
         # later. Pixel here consists of as many values, as we have classes in
         # dataset.
         width = int(math.pow(self.grain, self.dimensions))
-        height = len(self.dataset.classes)
 
-        self.model = [[0 for x in range(height)] for y in range(width)]
-        self.hsv = [[0 for x in range(3)] for y in range(width)]
+        self.model = np.zeros((width, len(self.dataset.classes)))
+        self.hsv = np.zeros((width, 3))
 
         # ==== Exposing array on a beam of samples ====
         for sample in self.dataset.samples:
