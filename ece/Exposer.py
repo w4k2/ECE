@@ -134,9 +134,8 @@ class Exposer(Classifier):
         # The euclidean distance between quantified (`location_i`) and
         # exact location (`location_f`) lets us to establish a `factor`
         # used to correct distances comming from base vectors.
-        distance = [n**2 for n in map(operator.sub, location_i, location)]
-        distance = sum(distance)
-        distance = math.sqrt(distance)
+        distance = math.sqrt(sum(
+            [n**2 for n in map(operator.sub, location_i, location)]))
         factor = 5 - distance
 
         # Now we can iterate every `dropVector`.
@@ -157,9 +156,8 @@ class Exposer(Classifier):
             # factor. After calculating its index for single-dimension
             # representation, it is added to matrix at row corresponding
             # to a sample `label`.
-            influence = dropVector[1] * factor
             position = self.position(vector)
-            self.model[position][label] += influence
+            self.model[position][label] += dropVector[1] * factor
 
     # === Prediction ===
     def predict(self):
