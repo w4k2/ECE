@@ -134,8 +134,7 @@ class Exposer(Classifier):
         # The euclidean distance between quantified (`location_i`) and
         # exact location (`location_f`) lets us to establish a `factor`
         # used to correct distances comming from base vectors.
-        distance = math.sqrt(sum(
-            [n**2 for n in map(operator.sub, location_i, location)]))
+        distance = np.linalg.norm(location_i-location)
         factor = 5 - distance
 
         # Now we can iterate every `dropVector`.
@@ -248,8 +247,7 @@ class Exposer(Classifier):
 
             # For every point we calculate euclidian distance between it and a
             # centre point.
-            distance = math.sqrt(
-                sum([n**2 for n in map(operator.sub, centre, point)]))
+            distance = np.linalg.norm(np.array(centre)-point)
 
             # If the distance is lower than quantified radius, we extend the
             # base vector list with a tuple of location and influence, computed
