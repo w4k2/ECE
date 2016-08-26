@@ -301,6 +301,11 @@ lambda of `[2, 3]` for `1.0` radius and grain of `256` quants.
                 m = v - c
                 x = c * (1 - abs((h * 6. % 2) - 1))
 
+                r = {0: c, 1: x, 2: 0, 3: 0, 4: x, 5: c}[int(h*6)]
+                g = {0: x, 1: c, 2: c, 3: x, 4: 0, 5: 0}[int(h*6)]
+                b = {0: 0, 1: 0, 2: x, 3: c, 4: c, 5: x}[int(h*6)]
+
+                """
                 if h < 1. / 6:
                     r, g, b = c, x, 0
                 elif h < 2. / 6:
@@ -313,7 +318,7 @@ lambda of `[2, 3]` for `1.0` radius and grain of `256` quants.
                     r, g, b = x, 0, c
                 else:
                     r, g, b = c, 0, x
-
+                """
                 row += (
                     rgb[0] * scale + r * (255 - scale),
                     rgb[1] * scale + g * (255 - scale),
