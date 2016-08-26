@@ -70,43 +70,55 @@ class ECE(Ensemble):
         self.dimensions = configuration['dimensions']
         self.configuration = configuration
         self.exposers = []
+        self.dataset = dataset
 
         # Later, we're gathering the dataset and creating empty list of
         # lambdas.
-        self.combinations = []
+        self.combinations = self.constructEnsemble(self.approach)
 
+        for combination in self.combinations:
+            chosen_lambda = list(combination)
+            exposerConfiguration = {'chosenLambda': chosen_lambda}
+            exposerConfiguration.update(self.configuration)
+            exposer = Exposer(self.dataset, exposerConfiguration)
+            self.exposers.append(exposer)
+
+    def constructEnsemble(self, approach):
         # ##### Brutal approach
         # For every dimensionality from `dimensions` list we're creating a list
         # of all possible combinations and appending them to the combinations
         # list.
+        combinations = []
         for dimension in self.dimensions:
-            given_range = range(0, dataset.features)
-            combinations = itertools.combinations(given_range, dimension)
-            self.combinations += list(combinations)
+            given_range = range(0, self.dataset.features)
+            combinations += list(itertools.combinations(given_range, dimension))
+
+        if approach == ECEApproach.brutal:
+            return combinations
 
         # ##### Random approach
         # If the random approach is chosen, a list of combinations is limited
         # to a random subset in a number given by `limit` parameter.
-        if self.approach == ECEApproach.random:
+        elif approach == ECEApproach.random:
             limit = self.configuration['limit']
-            random.shuffle(self.combinations)
-            self.combinations = self.combinations[0:limit]
+            random.shuffle(combinations)
+            return combinations[0:limit]
 
         # ##### Heuristic approach
         # For the heuristic approach is chosen, a list of combinations is
         # limited to a random subset in a number given by the `limit` parameter
         # , established as pool.
-        if self.approach == ECEApproach.heuristic:
-
+        else:
             limit = self.configuration['limit']
             pool = self.configuration['pool']
-            random.shuffle(self.combinations)
-            self.combinations = self.combinations[0:pool]
+
+            random.shuffle(combinations)
+            combinations = combinations[0:pool]
             e_pool = []
 
             # Later, for every combination in pool, we create an exposer with
             # grain `4` and radius `1`.
-            for combination in self.combinations:
+            for combination in combinations:
                 configuration = {
                     'grain': 4,
                     'radius': 1,
@@ -129,14 +141,9 @@ class ECE(Ensemble):
                     reverse=True)
                 n_pool = n_pool[0:(limit / len(self.dataset.classes))]
                 for exposer in n_pool:
-                    self.combinations.append((exposer.chosenLambda))
+                    combinations.append((exposer.chosenLambda))
 
-        for combination in self.combinations:
-            chosen_lambda = list(combination)
-            exposerConfiguration = {'chosenLambda': chosen_lambda}
-            exposerConfiguration.update(self.configuration)
-            exposer = Exposer(self.dataset, exposerConfiguration)
-            self.exposers.append(exposer)
+            return combinations
 
     def learn(self):
         for exposer in self.exposers:
