@@ -74,80 +74,77 @@ class ECE(Ensemble):
 
         # Later, we're gathering the dataset and creating empty list of
         # lambdas.
-        self.combinations = self.constructEnsemble(self.approach)
+        self.combinations = self.composeEnsemble()
 
+        # ##### Brutal approach
+        # For every dimensionality from `dimensions` list we're creating a list
+        # of all possible combinations and appending them to the combinations
+        # list.
+
+    def composeEnsemble(self):
+        combinations = []
+        given_range = range(0, self.dataset.features)
+        for dimension in self.dimensions:
+            combinations += list(
+                itertools.combinations(given_range, dimension))
+
+        if not self.approach == ECEApproach.brutal:
+            random.shuffle(combinations)
+
+            # ##### Random approach
+            # If the random approach is chosen, a list of combinations is limited
+            # to a random subset in a number given by `limit` parameter.
+            if self.approach == ECEApproach.random:
+                limit = self.configuration['limit']
+                combinations = combinations[0:limit]
+
+            # ##### Heuristic approach
+            # For the heuristic approach is chosen, a list of combinations is
+            # limited to a random subset in a number given by the `limit` parameter
+            # , established as pool.
+            else:
+                limit = self.configuration['limit']
+                pool = self.configuration['pool']
+                combinations = combinations[0:pool]
+                e_pool = []
+
+                # Later, for every combination in pool, we create an exposer with
+                # grain `4` and radius `1`.
+                for combination in combinations:
+                    configuration = {
+                        'grain': 5,
+                        'radius': .75,
+                        'exposerVotingMethod': ExposerVotingMethod.lone,
+                        'chosenLambda': list(combination)
+                    }
+                    e_pool.append(Exposer(self.dataset, configuration))
+
+                for exposer in e_pool:
+                    exposer.learn()
+
+                combinations = []
+                i_pool = []
+                # And a limited subset of pool members with highest theta is
+                # appended to the list of combinations.
+                for label in xrange(0, len(self.dataset.classes)):
+                    n_pool = sorted(
+                        e_pool,
+                        key=lambda exposer: exposer.thetas[label],
+                        reverse=True)
+                    n_pool = n_pool[0:(limit / len(self.dataset.classes))]
+                    for exposer in n_pool:
+                        combinations.append((exposer.chosenLambda))
+
+        return combinations
+
+    def learn(self):
         for combination in self.combinations:
             chosen_lambda = list(combination)
             exposerConfiguration = {'chosenLambda': chosen_lambda}
             exposerConfiguration.update(self.configuration)
             exposer = Exposer(self.dataset, exposerConfiguration)
-            self.exposers.append(exposer)
-
-    def constructEnsemble(self, approach):
-        # ##### Brutal approach
-        # For every dimensionality from `dimensions` list we're creating a list
-        # of all possible combinations and appending them to the combinations
-        # list.
-        combinations = []
-        for dimension in self.dimensions:
-            given_range = range(0, self.dataset.features)
-            combinations += list(itertools.combinations(given_range, dimension))
-
-        if approach == ECEApproach.brutal:
-            return combinations
-
-        # ##### Random approach
-        # If the random approach is chosen, a list of combinations is limited
-        # to a random subset in a number given by `limit` parameter.
-        elif approach == ECEApproach.random:
-            limit = self.configuration['limit']
-            random.shuffle(combinations)
-            return combinations[0:limit]
-
-        # ##### Heuristic approach
-        # For the heuristic approach is chosen, a list of combinations is
-        # limited to a random subset in a number given by the `limit` parameter
-        # , established as pool.
-        else:
-            limit = self.configuration['limit']
-            pool = self.configuration['pool']
-
-            random.shuffle(combinations)
-            combinations = combinations[0:pool]
-            e_pool = []
-
-            # Later, for every combination in pool, we create an exposer with
-            # grain `4` and radius `1`.
-            for combination in combinations:
-                configuration = {
-                    'grain': 4,
-                    'radius': 1,
-                    'exposerVotingMethod': ExposerVotingMethod.lone,
-                    'chosenLambda': list(combination)
-                }
-                e_pool.append(Exposer(self.dataset, configuration))
-
-            for exposer in e_pool:
-                exposer.learn()
-
-            self.combinations = []
-            i_pool = []
-            # And a limited subset of pool members with highest theta is
-            # appended to the list of combinations.
-            for label in xrange(0, len(self.dataset.classes)):
-                n_pool = sorted(
-                    e_pool,
-                    key=lambda exposer: exposer.thetas[label],
-                    reverse=True)
-                n_pool = n_pool[0:(limit / len(self.dataset.classes))]
-                for exposer in n_pool:
-                    combinations.append((exposer.chosenLambda))
-
-            return combinations
-
-    def learn(self):
-        for exposer in self.exposers:
             exposer.learn()
+            self.exposers.append(exposer)
 
     # ### Prediction
     # Prediction in this case is just creating and configuring exposer for
