@@ -106,6 +106,7 @@ class Exposer(Classifier):
         # dataset.
         width = int(math.pow(self.grain, self.dimensions))
         height = len(self.dataset.classes)
+
         self.model = [[0 for x in range(height)] for y in range(width)]
         self.hsv = [[0 for x in range(3)] for y in range(width)]
 
@@ -143,12 +144,7 @@ class Exposer(Classifier):
                 # Thus the real location may overflow the space of _exposer_,
                 # we need to deal with it by checking if its value fits in
                 # range of model.
-                overflow = False
-                for i in xrange(0, self.dimensions):
-                    if vector[i] < 0 or vector[i] >= self.grain:
-                        overflow = True
-                        continue
-                if overflow:
+                if any(v < 0 or v >= self.grain for v in vector):
                     continue
 
                 # Finally, we can calculate the real `influence` as a product
