@@ -112,52 +112,55 @@ class Exposer(Classifier):
 
         # ==== Exposing array on a beam of samples ====
         for sample in self.dataset.samples:
-            # For every `sample` in a `dataset`, we read its `label` and a
-            # subset of its `features` for `chosenLambda`.
-            label = sample.label
-            features = [sample.features[index] for index in self.chosenLambda]
-
-            # Ignore samples with missing values
-            if np.isnan(features).any():
-                continue
-
-            # According to `features`, we `establish` a `location` of point in
-            # exposers space, corresponding to processed `sample`.
-            location = np.array(features) * self.grain
-            location_i = (location).astype(int)
-
-            # The euclidean distance between quantified (`location_i`) and
-            # exact location (`location_f`) lets us to establish a `factor`
-            # used to correct distances comming from base vectors.
-            distance = [n**2 for n in map(operator.sub, location_i, location)]
-            distance = sum(distance)
-            distance = math.sqrt(distance)
-            factor = 5 - distance
-
-            # Now we can iterate every `dropVector`.
-            for dropVector in self.dropVectors:
-                # Simple addition between quantified location and a drop vector
-                # gives us a real location (`vector`), where the influence will
-                # be placed.
-                vector = map(operator.add, dropVector[0], location_i)
-
-                # Thus the real location may overflow the space of _exposer_,
-                # we need to deal with it by checking if its value fits in
-                # range of model.
-                if any(v < 0 or v >= self.grain for v in vector):
-                    continue
-
-                # Finally, we can calculate the real `influence` as a product
-                # of drop vector distance from central point and precalculated
-                # factor. After calculating its index for single-dimension
-                # representation, it is added to matrix at row corresponding
-                # to a sample `label`.
-                influence = dropVector[1] * factor
-                position = self.position(vector)
-                self.model[position][label] += influence
+            self.expose(sample)
 
         self.normalize()
         self.calculate_measures()
+
+    def expose(self, sample):
+        # For every `sample` in a `dataset`, we read its `label` and a
+        # subset of its `features` for `chosenLambda`.
+        label = sample.label
+        features = [sample.features[index] for index in self.chosenLambda]
+
+        # Ignore samples with missing values
+        if np.isnan(features).any():
+            pass
+
+        # According to `features`, we `establish` a `location` of point in
+        # exposers space, corresponding to processed `sample`.
+        location = np.array(features) * self.grain
+        location_i = (location).astype(int)
+
+        # The euclidean distance between quantified (`location_i`) and
+        # exact location (`location_f`) lets us to establish a `factor`
+        # used to correct distances comming from base vectors.
+        distance = [n**2 for n in map(operator.sub, location_i, location)]
+        distance = sum(distance)
+        distance = math.sqrt(distance)
+        factor = 5 - distance
+
+        # Now we can iterate every `dropVector`.
+        for dropVector in self.dropVectors:
+            # Simple addition between quantified location and a drop vector
+            # gives us a real location (`vector`), where the influence will
+            # be placed.
+            vector = map(operator.add, dropVector[0], location_i)
+
+            # Thus the real location may overflow the space of _exposer_,
+            # we need to deal with it by checking if its value fits in
+            # range of model.
+            if any(v < 0 or v >= self.grain for v in vector):
+                continue
+
+            # Finally, we can calculate the real `influence` as a product
+            # of drop vector distance from central point and precalculated
+            # factor. After calculating its index for single-dimension
+            # representation, it is added to matrix at row corresponding
+            # to a sample `label`.
+            influence = dropVector[1] * factor
+            position = self.position(vector)
+            self.model[position][label] += influence
 
     # === Prediction ===
     def predict(self):
