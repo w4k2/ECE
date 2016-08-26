@@ -177,7 +177,7 @@ class Exposer(Classifier):
 
             # Establish location
             location = [
-                int(feature * self.grain) if feature < 1 else self.grain-1
+                int(feature * self.grain) if feature < 1 else self.grain - 1
                 for feature in features]
 
             # Corrected location makes possible to calculate `position` of
@@ -185,39 +185,24 @@ class Exposer(Classifier):
             # to gather the corresponding `support` vector.
             position = self.position(location)
             support = self.model[position]
-
-            # For the **lone** participation, we simply add the support vector
-            # to the support accumulator inside the sample object.
-            if self.exposerVotingMethod == ExposerVotingMethod.lone:
-                givenSupport = support
-
-            # If it is a **theta1** participation, we increase support
-            # accumulator by a product of ensemble support and a scalar measure
-            # `theta`.
-            elif self.exposerVotingMethod == ExposerVotingMethod.theta1:
-                givenSupport = self.theta * np.array(support)
-
-            # When we use **theta2**, a product multiplies ensemble support and
-            # a vector measure `thetas`.
-            elif self.exposerVotingMethod == ExposerVotingMethod.theta2:
-                givenSupport = map(operator.mul, self.thetas, support)
-
-            # When we use **theta3**, a product multiplies ensemble support and
-            # both a vector and a scalar `theta` measures.
-            elif self.exposerVotingMethod == ExposerVotingMethod.theta3:
-                givenSupport = self.theta * \
-                    np.array(map(operator.mul, self.thetas, support))
-
-            # When we use **thetas**, a product multiplies ensemble support and
-            # a vector measure `thetas`.
-            else:
-                saturation = self.hsv[position][1]
-                givenSupport = saturation * self.theta * \
-                    np.array(map(operator.mul, self.thetas, support))
+            saturation = self.hsv[position][1]
 
             # Finally, we demand on `sample` to establish a prediction,
             # according to its accumulated support vector.
-            sample.support += givenSupport
+            sample.support += {
+                ExposerVotingMethod.lone:
+                    support,
+                ExposerVotingMethod.theta1:
+                    self.theta * np.array(support),
+                ExposerVotingMethod.theta2:
+                    map(operator.mul, self.thetas, support),
+                ExposerVotingMethod.theta3:
+                    self.theta * np.array(
+                        map(operator.mul, self.thetas, support)),
+                ExposerVotingMethod.thetas:
+                    saturation * self.theta * np.array(
+                        map(operator.mul, self.thetas, support))
+            }[self.exposerVotingMethod]
             sample.decidePrediction()
 
     # ---
