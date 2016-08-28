@@ -90,35 +90,30 @@ class ECE(Ensemble):
 
         if not self.approach == ECEApproach.brutal:
             random.shuffle(combinations)
+            limit = self.configuration['limit']
 
             # ##### Random approach
-            # If the random approach is chosen, a list of combinations is limited
-            # to a random subset in a number given by `limit` parameter.
+            # If the random approach is chosen, a list of combinations is
+            # limited to a random subset in a number given by `limit` parameter
             if self.approach == ECEApproach.random:
-                limit = self.configuration['limit']
                 combinations = combinations[0:limit]
 
             # ##### Heuristic approach
             # For the heuristic approach is chosen, a list of combinations is
-            # limited to a random subset in a number given by the `limit` parameter
-            # , established as pool.
+            # limited to a random subset in a number given by the `limit`
+            # parameter, established as pool.
             else:
-                limit = self.configuration['limit']
                 pool = self.configuration['pool']
                 combinations = combinations[0:pool]
-                e_pool = []
 
-                # Later, for every combination in pool, we create an exposer with
-                # grain `4` and radius `1`.
-                for combination in combinations:
-                    configuration = {
-                        'grain': 5,
-                        'radius': .75,
-                        'exposerVotingMethod': ExposerVotingMethod.lone,
-                        'chosenLambda': list(combination)
-                    }
-                    e_pool.append(Exposer(self.dataset, configuration))
-
+                # Later, for every combination in pool, we create an exposer
+                # with grain `4` and radius `1`.
+                e_pool = [Exposer(self.dataset, {
+                    'grain': 5,
+                    'radius': .75,
+                    'exposerVotingMethod': ExposerVotingMethod.lone,
+                    'chosenLambda': list(combination)
+                }) for combination in combinations]
                 for exposer in e_pool:
                     exposer.learn()
 
