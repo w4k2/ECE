@@ -20,7 +20,7 @@ def test_exposer():
     dataset.setCV(0)
 
     configuration = {
-        'radius': .25, 
+        'radius': .25,
         'grain': 20,
         'chosenLambda': [2, 4]
     }
@@ -30,8 +30,31 @@ def test_exposer():
     exposer.predict()
     scores = dataset.score()
 
-    print  "\n\t%sACC = %.3f%s" % (blue(), scores['accuracy'], endcolor())
+    print "\n\t%sACC = %.3f%s" % (blue(), scores['accuracy'], endcolor())
     assert np.isnan(scores['accuracy']) == False
+
+
+def test_scaled_exposer():
+    """Do exposer classify using scales?"""
+    dataset = Dataset('data/wine.csv')
+    dataset.setCV(0)
+
+    configuration = {
+        'radius': .25,
+        'grain': 20,
+        'chosenLambda': [2, 4]
+    }
+    scales = [.5,.5,1]
+    exposer = Exposer(dataset, configuration, scales)
+    exposer.learn()
+    dataset.clearSupports()
+    exposer.predict()
+    scores = dataset.score()
+
+    print "\n\t%sACC = %.3f%s" % (blue(), scores['accuracy'], endcolor())
+    assert np.isnan(scores['accuracy']) == False
+    # .662
+
 
 def test_missing_exposer():
     """Do exposer classify missing values?"""
@@ -39,7 +62,7 @@ def test_missing_exposer():
     dataset.setCV(0)
 
     configuration = {
-        'radius': .25, 
+        'radius': .25,
         'grain': 20,
         'chosenLambda': [2, 5]
     }
@@ -63,9 +86,9 @@ def test_ensemble():
         for votingMethod in votingMethods:
             dataset.setCV(fold)
             configuration = {
-                'radius': .2, 
-                'grain': 10, 
-                'limit': 20, 
+                'radius': .2,
+                'grain': 10,
+                'limit': 20,
                 'pool': 40,
                 'dimensions': [2],
                 'eceApproach': ECEApproach.heuristic,
@@ -74,10 +97,10 @@ def test_ensemble():
             ensemble = ECE(dataset,configuration)
             ensemble.learn()
             dataset.clearSupports()
-        
+
             ensemble.predict()
             scores = dataset.score()
-            
+
             print  "\t%sACC = %.3f%s" % (blue(), scores['accuracy'], endcolor())
             assert np.isnan(scores['accuracy']) == False
 
@@ -92,7 +115,7 @@ def test_missing_ensemble():
         for votingMethod in votingMethods:
             dataset.setCV(fold)
             configuration = {
-                'radius': .2, 
+                'radius': .2,
                 'grain': 10,
                 'limit': 10,
                 'pool': 20,
@@ -103,9 +126,9 @@ def test_missing_ensemble():
             ensemble = ECE(dataset,configuration)
             ensemble.learn()
             dataset.clearSupports()
-        
+
             ensemble.predict()
             scores = dataset.score()
-            
+
             print  "\t%sACC = %.3f%s" % (blue(), scores['accuracy'], endcolor())
             assert np.isnan(scores['accuracy']) == False
