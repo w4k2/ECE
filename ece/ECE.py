@@ -157,7 +157,6 @@ class ECE(Ensemble):
             exposer.predict()
 
     def generatePNGs(self, prefix='exposer_'):
-        print 'Generating PNGs'
         i = 0
         for exposer in self.exposers:
             i += 1
