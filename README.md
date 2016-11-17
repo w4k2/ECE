@@ -1,4 +1,4 @@
-# ECE [![Build Status](https://travis-ci.org/w4k2/ECE.svg?branch=master)](https://travis-ci.org/w4k2/ECE)
+# ECE [![Build Status](https://travis-ci.org/w4k2/ECE.svg?branch=master)](https://travis-ci.org/w4k2/ECE) [![Code Climate](https://codeclimate.com/github/w4k2/ECE/badges/gpa.svg)](https://codeclimate.com/github/w4k2/ECE)
 
 **Exposer** is a data structure drawing from both <em>histogram</em> and a <em>scatter plot</em>. Like in <em>histogram</em>, the range of values is divided into a series of intervals, but like in a <em>scatter plot</em> the combination of features is analyzed. The rule of bin adjacency is here broken, so object may fall into more than one of them.
 
@@ -10,7 +10,7 @@ To create an _exposer_, all you need is to load a dataset, prepare dictionary wi
 
     dataset = Dataset('data/iris.csv','iris')
     configuration = {
-        'radius': .5, 
+        'radius': .5,
         'grain': 15,
         'chosenLambda': [2, 3]
     }
@@ -28,9 +28,9 @@ To create an ensemble, all you need is to load a dataset, prepare dictionary wit
 
     dataset = Dataset('data/iris.csv','iris')
     configuration = {
-        'radius': radius, 
-        'grain': grain, 
-        'limit': limit, 
+        'radius': radius,
+        'grain': grain,
+        'limit': limit,
         'dimensions': dimensions,
         'eecApproach': ECEApproach.random,
         'exposerVotingMethod': ExposerVotingMethod.lone
