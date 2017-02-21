@@ -1,4 +1,4 @@
-from ksskml import Dataset
+from weles import Dataset
 
 from ece import Exposer
 from ece import ECE

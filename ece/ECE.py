@@ -26,10 +26,10 @@ member of `dataset` object.
 
 """
 from Exposer import *
-from ksskml import Ensemble
-from ksskml import Dataset
-from ksskml import Sample
-from ksskml import utils
+from weles import Ensemble
+from weles import Dataset
+from weles import Sample
+from weles import utils
 import itertools
 import random
 

@@ -30,7 +30,7 @@ Dictionary with scores is provided by a function `score()` being a member of
 """
 
 
-from ksskml import Classifier
+from weles import Classifier
 
 from enum import Enum
 
