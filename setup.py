@@ -10,7 +10,7 @@ with open('LICENSE') as f:
 
 setup(
     name='ece',
-    version='0.7',
+    version='1.0',
     description='Exposer Classifier Ensemble',
     long_description=readme,
     author='Paweł Ksieniewicz',
