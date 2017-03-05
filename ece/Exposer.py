@@ -103,7 +103,7 @@ class Exposer(Classifier):
         )
 
     # === Learning ===
-    def learn(self):
+    def learn(self, resample = 10000):
         # It gives us enough information to create an empty `matrix` which will
         # store all the information in our _exposer_. Abstraction of
         # n-dimensional array of _pixels_ is realized by the one dimensional
