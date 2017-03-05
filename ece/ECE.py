@@ -148,7 +148,7 @@ class ECE(Ensemble):
                         radius = 1,
                         votingMethod = 1,
                         chosenLambda = combination,
-                        resampler = self.resampler
+                        resample = self.resample
                     )
                     for combination in combinations
                 ]
@@ -206,12 +206,13 @@ class ECE(Ensemble):
                 scales = self.scales,
                 votingMethod = self.exposerVotingMethod,
                 grain = self.grain,
-                radius = self.radius
+                radius = self.radius,
+                resample = self.resample
             )
             #exposerConfiguration = {'chosenLambda': chosen_lambda}
             #exposerConfiguration.update(self.configuration)
             #exposer = Exposer(self.dataset, exposerConfiguration, self.scales)
-            e.learn(resample = self.resample)
+            e.learn()
             self.exposers.append(e)
 
     # ### Prediction

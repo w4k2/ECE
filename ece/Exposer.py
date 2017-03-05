@@ -66,7 +66,7 @@ class ExposerVotingMethod(Enum):
 class Exposer(Classifier):
     # ==== Preparing an _exposer_ ====
 
-    def __init__(self, dataset, chosenLambda, scales = None, votingMethod = 1, grain = 5, radius = .1):
+    def __init__(self, dataset, chosenLambda, scales = None, votingMethod = 1, grain = 5, radius = .1, resample = 10000):
         Classifier.__init__(self, dataset)
         # First, we're collecting four values from passed configuration:
         #
@@ -80,6 +80,7 @@ class Exposer(Classifier):
         self.radius = radius
         self.chosenLambda = chosenLambda
         self.scales = scales
+        self.resample = resample
 
         self.thetas = None
 
@@ -104,7 +105,7 @@ class Exposer(Classifier):
         )
 
     # === Learning ===
-    def learn(self, resample = 10000):
+    def learn(self):
         # It gives us enough information to create an empty `matrix` which will
         # store all the information in our _exposer_. Abstraction of
         # n-dimensional array of _pixels_ is realized by the one dimensional
@@ -116,8 +117,8 @@ class Exposer(Classifier):
         self.model = np.zeros((width, len(self.dataset.classes)))
         self.hsv = np.zeros((width, 3))
 
-        if resample < len(self.dataset.samples):
-            resampler = random.sample(range(len(self.dataset.samples)), resample)
+        if self.resample < len(self.dataset.samples):
+            resampler = random.sample(range(len(self.dataset.samples)), self.resample)
             # ==== Exposing array on a beam of samples ====
             for i, sample in enumerate(self.dataset.samples):
                 if i in resampler:
