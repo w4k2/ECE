@@ -53,7 +53,7 @@ class ECEApproach(Enum):
 class ECE(Ensemble):
     # ==== Preparing an ensemble
 
-    def __init__(self, dataset, selection=None, scales=None, approach = 1, votingMethod = 1, dimensions = [2], grain = 5, radius = .1, limit = 15, pool = 30):
+    def __init__(self, dataset, selection=None, scales=None, approach = 1, votingMethod = 1, dimensions = [2], grain = 5, radius = .1, limit = 15, pool = 30, resample = 10000):
         Ensemble.__init__(self, dataset)
         # First, we're collecting four values from passed configuration:
         #
@@ -70,6 +70,7 @@ class ECE(Ensemble):
         self.radius = radius
         self.limit = limit
         self.pool = pool
+        self.resample = resample
 
         self.exposers = []
         self.dataset = dataset
@@ -201,7 +202,7 @@ class ECE(Ensemble):
             #exposerConfiguration = {'chosenLambda': chosen_lambda}
             #exposerConfiguration.update(self.configuration)
             #exposer = Exposer(self.dataset, exposerConfiguration, self.scales)
-            e.learn()
+            e.learn(resample = self.resample)
             self.exposers.append(e)
 
     # ### Prediction

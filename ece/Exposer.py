@@ -38,6 +38,7 @@ import numpy as np
 import math
 import operator
 import png
+import random
 
 """
 ### _Exposer_ voting method
@@ -115,9 +116,17 @@ class Exposer(Classifier):
         self.model = np.zeros((width, len(self.dataset.classes)))
         self.hsv = np.zeros((width, 3))
 
-        # ==== Exposing array on a beam of samples ====
-        for sample in self.dataset.samples:
-            self.expose(sample)
+        if resample < len(self.dataset.samples):
+            resampler = random.sample(range(len(self.dataset.samples)), resample)
+            # ==== Exposing array on a beam of samples ====
+            for i, sample in enumerate(self.dataset.samples):
+                if i in resampler:
+                    self.expose(sample)
+        else:
+            # ==== Exposing array on a beam of samples ====
+            for sample in self.dataset.samples:
+                self.expose(sample)
+
 
         self.normalize()
         self.calculate_measures()
