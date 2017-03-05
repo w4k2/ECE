@@ -199,6 +199,8 @@ class ECE(Ensemble):
 
     def learn(self):
         #print 'Learning ECE'
+        self.dataset.clearSupports()
+        self.exposers = []
         for combination in self.combinations:
             e = Exposer(
                 dataset = self.dataset,
@@ -209,11 +211,13 @@ class ECE(Ensemble):
                 radius = self.radius,
                 resample = self.resample
             )
+            #print e
             #exposerConfiguration = {'chosenLambda': chosen_lambda}
             #exposerConfiguration.update(self.configuration)
             #exposer = Exposer(self.dataset, exposerConfiguration, self.scales)
             e.learn()
             self.exposers.append(e)
+        #print self.exposers
 
     # ### Prediction
     # Prediction in this case is just creating and configuring exposer for
