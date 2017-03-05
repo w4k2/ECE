@@ -87,14 +87,16 @@ class ECE(Ensemble):
         # list.
 
     @classmethod
-    def cfgTag(cls, ds, approach = 1, votingMethod = 1, dimensions = [2], grain = 5, radius = .1):
-        return 'ece_ds_%s_app_%i_vm_%i_dim_%s_g_%i_r_%i' % (
+    def cfgTag(cls, ds, approach = 1, votingMethod = 1, dimensions = [2], grain = 5, radius = .1, limit = 15, pool = 30):
+        return 'ece_ds_%s_app_%i_vm_%i_dim_%s_g_%i_r_%i_l_%i_p_%i' % (
             ds.db_name,
             approach,
             votingMethod,
             dimensions,
             grain,
-            int(1000 * radius)
+            int(1000 * radius),
+            limit,
+            pool
         )
 
     def composeEnsemble(self):
