@@ -7,7 +7,7 @@ To create an ensemble, all you need is to load a dataset, prepare dictionary
 with demanded configuration and use them to initiate object.
 
     dataset = Dataset('data/iris.csv','iris')
-    configuration = {s
+    configuration = {
         'radius': radius,
         'grain': grain,
         'limit': limit,
@@ -53,7 +53,7 @@ class ECEApproach(Enum):
 class ECE(Ensemble):
     # ==== Preparing an ensemble
 
-    def __init__(self, dataset, configuration, selection=None, scales=None):
+    def __init__(self, dataset, selection=None, scales=None, approach = 1, votingMethod = 1, dimensions = [2], grain = 5, radius = .1, limit = 15, pool = 30):
         Ensemble.__init__(self, dataset)
         # First, we're collecting four values from passed configuration:
         #
@@ -63,12 +63,14 @@ class ECE(Ensemble):
         # dimensionalities.
         # - **configuration**, used to configure _exposers_.
 
-        self.approach = configuration['eceApproach']
-        self.exposerVotingMethod = ExposerVotingMethod.lone
-        if 'exposerVotingMethod' in configuration:
-            self.exposerVotingMethod = configuration['exposerVotingMethod']
-        self.dimensions = configuration['dimensions']
-        self.configuration = configuration
+        self.approach = approach
+        self.exposerVotingMethod = votingMethod
+        self.dimensions = dimensions
+        self.grain = grain
+        self.radius = radius
+        self.limit = limit
+        self.pool = pool
+
         self.exposers = []
         self.dataset = dataset
         self.selection = selection
@@ -83,6 +85,17 @@ class ECE(Ensemble):
         # of all possible combinations and appending them to the combinations
         # list.
 
+    @classmethod
+    def cfgTag(cls, ds, approach = 1, votingMethod = 1, dimensions = [2], grain = 5, radius = .1):
+        return 'ece_ds_%s_app_%i_vm_%i_dim_%s_g_%i_r_%i' % (
+            ds.db_name,
+            approach,
+            votingMethod,
+            dimensions,
+            grain,
+            int(1000 * radius)
+        )
+
     def composeEnsemble(self):
         combinations = []
         given_range = range(0, self.dataset.features)
@@ -94,58 +107,102 @@ class ECE(Ensemble):
                 combinations += list(
                     itertools.combinations(given_range, dimension))
 
-        if not self.approach == ECEApproach.brutal:
+        #print '# Starting combinations'
+        #print combinations
+
+        #print '# Using approach %i' % self.approach
+        if not self.approach == 1:  # Not brutal
             random.shuffle(combinations)
-            limit = self.configuration['limit']
+
+            #print '# Tossed combinations'
+            #print combinations
 
             # ##### Random approach
             # If the random approach is chosen, a list of combinations is
             # limited to a random subset in a number given by `limit` parameter
-            if self.approach == ECEApproach.random:
-                combinations = combinations[0:limit]
+            if self.approach == 2: # Is random
+                combinations = combinations[0:self.limit]
+
+                #print '# Limited combinations'
+                #print combinations
 
             # ##### Heuristic approach
             # For the heuristic approach is chosen, a list of combinations is
             # limited to a random subset in a number given by the `limit`
             # parameter, established as pool.
             else:
-                pool = self.configuration['pool']
-                combinations = combinations[0:pool]
+                combinations = combinations[0:self.pool]
+
+                #print '# Pool of combinations'
+                #print combinations
 
                 # Later, for every combination in pool, we create an exposer
                 # with grain `4` and radius `1`.
-                e_pool = [Exposer(self.dataset, {
-                    'grain': 5,
-                    'radius': .75,
-                    'exposerVotingMethod': ExposerVotingMethod.lone,
-                    'chosenLambda': list(combination)
-                }) for combination in combinations]
+                e_pool = [
+                    Exposer(self.dataset, grain = 5, radius = 1, votingMethod = 1, chosenLambda = combination)
+                    for combination in combinations
+                ]
                 for exposer in e_pool:
                     exposer.learn()
 
+                #for exposer in e_pool:
+                #    print exposer
+
+                rank = {}
+                for c in combinations:
+                    rank.update({c: 0})
+
                 combinations = []
-                i_pool = []
                 # And a limited subset of pool members with highest theta is
                 # appended to the list of combinations.
-                for label in xrange(0, len(self.dataset.classes)):
+                for label in xrange(len(self.dataset.classes)):
                     n_pool = sorted(
                         e_pool,
                         key=lambda exposer: exposer.thetas[label],
                         reverse=True)
-                    n_pool = n_pool[0:(limit / len(self.dataset.classes))]
-                    for exposer in n_pool:
-                        combinations.append((exposer.chosenLambda))
+                    #print '\t# Votes for label %i' % label
+                    #print '\t%s' % (['%.3f' % e.thetas[label] for e in n_pool])
+                    #print '\t%s' % [e.chosenLambda for e in n_pool]
+                    for i, e in enumerate(n_pool):
+                        combination = e.chosenLambda
+                        theta = e.thetas[label]
+                        position = i + 1
+                        score = (self.pool - i) * theta
+                        #print '\t\tposition = %i, theta = %.3f, combination = %s, score = %.3f [%s]' % (
+                        #    position,
+                        #    theta,
+                        #    combination,
+                        #    score,
+                        #    e
+                        #)
+                        rank[combination] += score
 
+                #print '\t# Final rank'
+                #print '\t%s' % rank
+                combinations = [item[0] for item in sorted(rank.items(), key=operator.itemgetter(1), reverse = True)]
+
+            combinations = combinations[0:self.limit]
+
+        #print '# Final combinations'
+        #print combinations
         return combinations
 
     def learn(self):
+        #print 'Learning ECE'
         for combination in self.combinations:
-            chosen_lambda = list(combination)
-            exposerConfiguration = {'chosenLambda': chosen_lambda}
-            exposerConfiguration.update(self.configuration)
-            exposer = Exposer(self.dataset, exposerConfiguration, self.scales)
-            exposer.learn()
-            self.exposers.append(exposer)
+            e = Exposer(
+                dataset = self.dataset,
+                chosenLambda = combination,
+                scales = self.scales,
+                votingMethod = self.exposerVotingMethod,
+                grain = self.grain,
+                radius = self.radius
+            )
+            #exposerConfiguration = {'chosenLambda': chosen_lambda}
+            #exposerConfiguration.update(self.configuration)
+            #exposer = Exposer(self.dataset, exposerConfiguration, self.scales)
+            e.learn()
+            self.exposers.append(e)
 
     # ### Prediction
     # Prediction in this case is just creating and configuring exposer for
