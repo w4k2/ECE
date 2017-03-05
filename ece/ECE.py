@@ -140,7 +140,14 @@ class ECE(Ensemble):
                 # Later, for every combination in pool, we create an exposer
                 # with grain `4` and radius `1`.
                 e_pool = [
-                    Exposer(self.dataset, grain = 5, radius = 1, votingMethod = 1, chosenLambda = combination)
+                    Exposer(
+                        dataset = self.dataset,
+                        grain = 5,
+                        radius = 1,
+                        votingMethod = 1,
+                        chosenLambda = combination,
+                        resampler = self.resampler
+                    )
                     for combination in combinations
                 ]
                 for exposer in e_pool:
