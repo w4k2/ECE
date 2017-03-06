@@ -117,12 +117,18 @@ class Exposer(Classifier):
         self.model = np.zeros((width, len(self.dataset.classes)))
         self.hsv = np.zeros((width, 3))
 
+        #print '%i is the value of resample' % self.resample
         if self.resample < len(self.dataset.samples):
             resampler = random.sample(range(len(self.dataset.samples)), self.resample)
+            #print '%i is a number of indexes in resampler' % len(resampler)
+            #print resampler
             # ==== Exposing array on a beam of samples ====
+            #a = 0
             for i, sample in enumerate(self.dataset.samples):
                 if i in resampler:
                     self.expose(sample)
+                    #a += 1
+            #print '%i samples analysed' % a
         else:
             # ==== Exposing array on a beam of samples ====
             for sample in self.dataset.samples:
