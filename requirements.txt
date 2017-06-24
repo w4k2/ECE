@@ -6,3 +6,4 @@ numpy
 coverage
 weles
 codeclimate-test-reporter
+sklearn
