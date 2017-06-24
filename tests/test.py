@@ -16,7 +16,7 @@ def endcolor():
 
 def test_exposer():
     """Do exposer classify?"""
-    dataset = Dataset('data/datasets/iris.csv')
+    dataset = Dataset('data/iris.csv')
     dataset.setCV(0)
 
     exposer = Exposer(dataset, chosenLambda = [0,2])
@@ -30,7 +30,7 @@ def test_exposer():
 
 def test_ensemble():
     """How do ensemble classify according to participations?"""
-    dataset = Dataset('data/datasets/iris.csv')
+    dataset = Dataset('data/iris.csv')
     print "\n"
 
     votingMethods = [ExposerVotingMethod.lone, ExposerVotingMethod.theta1, ExposerVotingMethod.theta2, ExposerVotingMethod.theta3, ExposerVotingMethod.thetas]

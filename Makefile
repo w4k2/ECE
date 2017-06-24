@@ -7,10 +7,7 @@ install:
 publish: test
 	python setup.py sdist upload
 
-getData:
-	if [ ! -d "data" ]; then git clone https://github.com/w4k2/data.git; rm -rf data/.git; fi
-
-test: getData
+test:
 	clear
 	nosetests --verbosity=2 --with-coverage -x --with-xunit -cover-erase --cover-package=ece --nocapture
 
