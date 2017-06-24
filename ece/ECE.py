@@ -53,7 +53,7 @@ class ECEApproach(Enum):
 class ECE(Ensemble):
     # ==== Preparing an ensemble
 
-    def __init__(self, dataset, selection=None, scales=None, approach = 1, votingMethod = 1, dimensions = [2], grain = 5, radius = .1, limit = 15, pool = 30, resample = 10000):
+    def __init__(self, dataset, selection=None, scales=None, approach = 1, votingMethod = 1, dimensions = [2], grain = 20, radius = .25, limit = 15, pool = 30, resample = 10000):
         Ensemble.__init__(self, dataset)
         # First, we're collecting four values from passed configuration:
         #

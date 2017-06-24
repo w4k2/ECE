@@ -66,7 +66,7 @@ class ExposerVotingMethod(Enum):
 class Exposer(Classifier):
     # ==== Preparing an _exposer_ ====
 
-    def __init__(self, dataset, chosenLambda, scales = None, votingMethod = 1, grain = 5, radius = .1, resample = 10000):
+    def __init__(self, dataset, chosenLambda, scales = None, votingMethod = 1, grain = 20, radius = .25, resample = 10000):
         Classifier.__init__(self, dataset)
         # First, we're collecting four values from passed configuration:
         #

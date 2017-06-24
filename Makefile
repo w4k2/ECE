@@ -8,8 +8,7 @@ publish: test
 	python setup.py sdist upload
 
 getData:
-	rm -rf data
-	git clone --depth=1 https://github.com/w4k2/data.git data
+	if [ ! -d "data" ]; then git clone https://github.com/w4k2/data.git; rm -rf data/.git; fi
 
 test:
 	clear
