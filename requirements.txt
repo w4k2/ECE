@@ -7,3 +7,4 @@ coverage
 weles
 codeclimate-test-reporter
 sklearn
+scipy
